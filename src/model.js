@@ -5,26 +5,32 @@ console.log();
 
 export function model(intent$) {
 	const value$ = intent$
-		.startWith('')
 		.map((value) => ({
 			type: 'VALUE',
 			value,
 		}));
 
-	const results$ = value$.flatMap(({ value }) => {
-		if (!value) return Rx.Observable.just([]);
-		return getResults(value)
-			.then((res) => res.json())
-			.then((body) => {
-				return {
-					type: 'RESULTS',
-					results: body[1],
-				};
-			});
-	});
+	const results$ = value$
+		.debounce(300)
+		.flatMap(({ value }) => {
+			if (!value) return Rx.Observable.just({ type: 'RESULTS', results: [] });
+			return getResults(value)
+				.then((res) => res.json())
+				.then((body) => {
+					return {
+						type: 'RESULTS',
+						results: body[1],
+					};
+				});
+		})
+		.do(x => console.log(x));
 
 
 	return Rx.Observable.merge(value$, results$)
+		.startWith({
+			value: '',
+			results: [],
+		})
 		.scan(({ value, results }, delta) => {
 			switch (delta.type) {
 				case 'VALUE':

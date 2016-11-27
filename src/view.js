@@ -4,14 +4,13 @@ import { connectedView } from './libs/connectedView';
 
 const ObservableInput = observeComponent('input', ['onChange']);
 
-function View(props) {
-	console.log(props);
+function View({ value, results = [] }) {
 	// console.log(value);
 	return (
 		<div>
-			<ObservableInput type="text" value={props.value} />
+			<ObservableInput type="text" value={value} />
 			<div>
-				{props.results && props.results.map((title, i) => 
+				{results.map((title, i) => 
 					<div key={i}>{title}</div>
 				)}
 			</div>
