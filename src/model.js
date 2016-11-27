@@ -3,8 +3,8 @@ import { getResults } from './libs/getResults';
 
 console.log();
 
-export function model(intent$) {
-	const value$ = intent$
+export function model(intents) {
+	const value$ = intents.input$
 		.map((value) => ({
 			type: 'VALUE',
 			value,
