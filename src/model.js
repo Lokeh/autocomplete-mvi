@@ -11,6 +11,7 @@ export function model(intents) {
 		}));
 
 	const hideResults$ = intents.inputBlur$
+		.delay(300)
 		.map(() => ({
 			type: 'HIDE_RESULTS',
 		}));
