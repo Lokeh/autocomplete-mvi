@@ -10,6 +10,11 @@ export function model(intents) {
 			value,
 		}));
 
+	const hideResults$ = intents.inputBlur$
+		.map(() => ({
+			type: 'HIDE_RESULTS',
+		}));
+
 	const results$ = value$
 		.debounce(300)
 		.flatMapLatest(({ value }) => {
@@ -32,7 +37,7 @@ export function model(intents) {
 		}));
 
 
-	return Rx.Observable.merge(value$, results$, autoComplete$)
+	return Rx.Observable.merge(value$, results$, autoComplete$, hideResults$)
 		.startWith({
 			value: '',
 			results: [],
@@ -59,6 +64,12 @@ export function model(intents) {
 						value: delta.value,
 						showResults: false,
 					}
+				case 'HIDE_RESULTS':
+					return {
+						results,
+						value,
+						showResults: false,
+					};
 				default:
 					return {
 						results,

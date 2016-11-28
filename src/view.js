@@ -40,6 +40,8 @@ const styles = {
 	result: {
 		fontFamily: "sans-serif",
 		fontSize: 16,
+		border: "1px solid #d3d3d3",
+		padding: 5,
 	},
 };
 
