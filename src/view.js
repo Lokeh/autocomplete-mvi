@@ -8,7 +8,7 @@ function View({ value, results = [], showResults = false }) {
 	// console.log(value);
 	return (
 		<div>
-			<SearchInput type="text" value={value} />
+			<SearchInput style={styles.search} type="text" value={value} />
 			{showResults ?
 				<ResultsList results={results} /> :
 				null
@@ -20,10 +20,28 @@ function View({ value, results = [], showResults = false }) {
 const ResultsList = observeComponent(({ results, onClick }) => (
 	<div>
 		{results.map((title, i) => 
-			<div key={i} onClick={() => onClick({ title })}>{title}</div>
+			<div
+				key={i}
+				onClick={() => onClick({ title })}
+				style={styles.result}
+			>
+				{title}
+			</div>
 		)}
 	</div>
 ), ['onClick']);
+
+const styles = {
+	search: {
+		fontSize: 20,
+		width: "100%",
+		fontFamily: "sans-serif"
+	},
+	result: {
+		fontFamily: "sans-serif",
+		fontSize: 16,
+	},
+};
 
 export const view = connectedView(View);
 export const events = {
