@@ -6,41 +6,7 @@ export function model(intents) {
 		.startWith({
 			value: '',
 			results: [],
+			showResults: false,
 		})
-		.scan(({ value, results, showResults }, delta) => {
-			console.log(delta);
-			switch (delta.type) {
-				case 'VALUE':
-					return {
-						results,
-						value: delta.value,
-						showResults,
-					};
-					break;
-				case 'RESULTS':
-					return {
-						results: delta.results,
-						value,
-						showResults: true,
-					};
-				case 'AUTOCOMPLETE':
-					return {
-						results,
-						value: delta.value,
-						showResults: false,
-					}
-				case 'HIDE_RESULTS':
-					return {
-						results,
-						value,
-						showResults: false,
-					};
-				default:
-					return {
-						results,
-						value,
-					};
-			}
-		});
-;
+		.scan((state, reducer) => reducer(state));
 }

@@ -5,7 +5,7 @@ import { connectedView } from './libs/connectedView';
 const SearchInput = observeComponent('input', ['onChange', 'onBlur']);
 
 function View({ value, results = [], showResults = false }) {
-	// console.log(value);
+	// console.log(results);
 	return (
 		<div>
 			<SearchInput style={styles.search} type="text" value={value} />
