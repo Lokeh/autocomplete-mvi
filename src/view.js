@@ -4,6 +4,7 @@ import { connectedView } from './libs/connectedView';
 
 const SearchInput = observeComponent('input', ['onChange', 'onBlur']);
 
+// View :: state -> DOM
 function View({ value, results = [], showResults = false }) {
 	// console.log(results);
 	return (
