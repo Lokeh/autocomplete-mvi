@@ -2,7 +2,7 @@ import React from 'react';
 import { observeComponent, fromComponent } from 'observe-component/rx';
 import { connectedView } from './libs/connectedView';
 
-const SearchInput = observeComponent('input', ['onChange', 'onBlur']);
+const SearchInput = observeComponent('onChange', 'onBlur')('input');
 
 // View :: state -> DOM
 function View({ value, results = [], showResults = false }) {
@@ -18,19 +18,20 @@ function View({ value, results = [], showResults = false }) {
 	);
 }
 
-const ResultsList = observeComponent(({ results, onClick }) => (
-	<ul style={styles.resultsBox}>
-		{results.map((title, i) => 
-			<li
-				key={i}
-				onClick={() => onClick({ title })}
-				style={styles.result}
-			>
-				{title}
-			</li>
-		)}
-	</ul>
-), ['onClick']);
+const ResultsList = 
+	observeComponent('onClick')(({ results, onClick }) => (
+		<ul style={styles.resultsBox}>
+			{results.map((title, i) => 
+				<li
+					key={i}
+					onClick={() => onClick({ title })}
+					style={styles.result}
+				>
+					{title}
+				</li>
+			)}
+		</ul>
+	));
 
 const styles = {
 	search: {

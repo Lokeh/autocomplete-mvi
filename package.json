@@ -11,7 +11,7 @@
   "author": "Will Acton",
   "license": "MIT",
   "dependencies": {
-    "observe-component": "^2.0.1",
+    "observe-component": "^3.0.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "rx": "^4.1.0"
