@@ -18,17 +18,17 @@ function View({ value, results = [], showResults = false }) {
 }
 
 const ResultsList = observeComponent(({ results, onClick }) => (
-	<div>
+	<ul style={styles.resultsBox}>
 		{results.map((title, i) => 
-			<div
+			<li
 				key={i}
 				onClick={() => onClick({ title })}
 				style={styles.result}
 			>
 				{title}
-			</div>
+			</li>
 		)}
-	</div>
+	</ul>
 ), ['onClick']);
 
 const styles = {
@@ -36,6 +36,11 @@ const styles = {
 		fontSize: 20,
 		width: "100%",
 		fontFamily: "sans-serif"
+	},
+	resultsBox: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
 	},
 	result: {
 		fontFamily: "sans-serif",
