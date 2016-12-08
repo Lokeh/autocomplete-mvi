@@ -1,6 +1,6 @@
 import * as Rx from 'rx';
 import { Component } from './Component';
-import { Delta } from './ViewState';
+import { Delta } from './Delta';
 
 // connectedView :: View -> Observable<State> -> Observable<View, State>
 export function connectedView<P>(View: Component): (Model: Rx.Observable<P>) => Rx.Observable<Delta<P>> {

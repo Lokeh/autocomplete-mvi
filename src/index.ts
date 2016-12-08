@@ -3,7 +3,7 @@ import { run } from './libs/run';
 
 // interfaces
 import { ViewProps } from './view';
-import { Delta } from './libs/ViewState';
+import { Delta } from './libs/Delta';
 
 // app
 import { view } from './view';

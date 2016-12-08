@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from './Component';
-import { Delta } from './ViewState';
+import { Delta } from './Delta';
 
 function renderDOM(DOMNode: Element, View: Component, state: any) {
 	ReactDOM.render(<View {...state} />, DOMNode);

@@ -1,1 +1,4 @@
-export type Component = React.ComponentClass<any> | React.StatelessComponent<any> | string;
+export type Component =
+    React.ComponentClass<any> |
+    React.StatelessComponent<any> |
+    string;
