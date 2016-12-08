@@ -22,13 +22,14 @@ module.exports = {
             { test: /\.tsx?$/, loader: "awesome-typescript-loader" }
         ],
 
-        // preLoaders: [
-        //     // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-        //     {
-        //         test: /\.js$/,
-        //         loader: "source-map-loader"
-        //     }
-        // ]
+        preLoaders: [
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {
+                test: /\.js$/,
+                loader: "source-map-loader",
+                include: "www/"
+            }
+        ]
     },
 
     // When importing a module whose path matches one of the following, just

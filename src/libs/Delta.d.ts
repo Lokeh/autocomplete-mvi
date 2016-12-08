@@ -1,6 +1,6 @@
 import { Component } from './Component';
 
 export interface Delta<P> {
-    view: Component,
+    View: Component,
     state: P,
 }

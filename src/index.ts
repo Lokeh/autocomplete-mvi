@@ -10,7 +10,7 @@ import { view } from './view';
 import { model } from './model';
 import { intent } from './intent';
 
-function main(): Rx.Observable<Delta<ViewProps>> {
+function main() {
 	return view(model(intent));
 }
 
