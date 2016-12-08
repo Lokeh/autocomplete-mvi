@@ -1,5 +1,11 @@
 import { events } from './view';
-export const intent = {
+export interface Intents {
+	inputChange$: Rx.Observable<string>,
+	inputBlur$: Rx.Observable<React.SyntheticEvent<any>>,
+	resultsClicks$: Rx.Observable<string>,
+};
+
+export const intent: Intents = {
 	inputChange$: events.input$
 		.filter(({ type }) => type === 'onChange')
 		.map(({ value }) => value.target.value),

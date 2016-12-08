@@ -1,5 +1,7 @@
-import Rx from 'rx';
+import * as Rx from 'rx';
 import { getResults } from './libs/getResults';
+import { Intents } from './intent';
+import { Model } from './model';
 
 /*
 	# Reducer pattern
@@ -20,11 +22,12 @@ import { getResults } from './libs/getResults';
 			.scan((state, reducer) => reducer(state));
 */
 
+export type Reducer = (state: Model) => Model
 
 // reducers :: Map<Observable<Delta>> -> Observable<Reducer>
-export function reducers(intents) {
+export function reducers(intents: Intents): Rx.Observable<Reducer> {
 	const value$ = intents.inputChange$
-		.map((value) => ({ results, showResults }) => ({
+		.map((value) => ({ results, showResults }: Model): Model => ({
 			results,
 			value,
 			showResults,
@@ -32,7 +35,7 @@ export function reducers(intents) {
 
 	const hideResults$ = intents.inputBlur$
 		.delay(300)
-		.map(() => ({ results, value }) => ({
+		.map(() => ({ results, value }: Model): Model => ({
 			results,
 			value,
 			showResults: false,
@@ -47,8 +50,8 @@ export function reducers(intents) {
 						showResults: false,
 					});
 			return getResults(value)
-				.then((res) => res.json())
-				.then((body) => {
+				.then((res: any): any => res.json())
+				.then((body: [string[]]): any => {
 					return {
 						results: body[1],
 						value,
@@ -56,10 +59,10 @@ export function reducers(intents) {
 					};
 				});
 		})
-		.map((newState) => (oldState) => newState);
+		.map((newState: Model) => (oldState: Model) => newState);
 
 	const autoComplete$ = intents.resultsClicks$
-		.map((value) => ({ results }) => ({
+		.map((value) => ({ results, showResults }: Model): Model => ({
 			results,
 			value: value,
 			showResults: false,

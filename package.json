@@ -11,17 +11,25 @@
   "author": "Will Acton",
   "license": "MIT",
   "dependencies": {
+    "@types/react": "^0.14.54",
+    "@types/react-dom": "^0.14.19",
+    "es6-shim": "^0.35.2",
     "observe-component": "^3.0.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
-    "rx": "^4.1.0"
+    "rx": "^4.1.0",
+    "whatwg-fetch": "^2.0.1"
   },
   "devDependencies": {
+    "@types/whatwg-fetch": "0.0.32",
+    "awesome-typescript-loader": "^3.0.0-beta.9",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "eslint": "^2.1.0",
+    "source-map-loader": "^0.1.5",
+    "typescript": "^2.1.4",
     "webpack": "^1.12.13",
     "webpack-dev-server": "^1.14.1"
   }

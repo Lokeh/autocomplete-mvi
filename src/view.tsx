@@ -1,17 +1,28 @@
-import React from 'react';
+import * as React from 'react';
 import { observeComponent, fromComponent } from 'observe-component/rx';
 import { connectedView } from './libs/connectedView';
 
-const SearchInput = observeComponent('onChange', 'onBlur')('input');
+export interface ViewProps {
+	value: string,
+	results: Object[],
+	showResults: boolean,
+};
+
+interface ResultsListProps {
+	results: Object[],
+	onClick: Function,
+};
+
+const SearchInput = observeComponent<React.HTMLProps<any>>('onChange', 'onBlur')('input');
 
 // View :: state -> DOM
-function View({ value, results = [], showResults = false }) {
+function View({ value, results = [], showResults = false }: ViewProps) {
 	// console.log(results);
 	return (
 		<div>
 			<SearchInput style={styles.search} type="text" value={value} />
 			{showResults ?
-				<ResultsList results={results} /> :
+				<ResultsList results={results} onClick={(): void => null} /> :
 				null
 			}
 		</div>
@@ -19,9 +30,9 @@ function View({ value, results = [], showResults = false }) {
 }
 
 const ResultsList = 
-	observeComponent('onClick')(({ results, onClick }) => (
+	observeComponent<ResultsListProps>('onClick')(({ results, onClick }: ResultsListProps) => (
 		<ul style={styles.resultsBox}>
-			{results.map((title, i) => 
+			{results.map((title: string, i: number) => 
 				<li
 					key={i}
 					onClick={() => onClick({ title })}
@@ -52,7 +63,7 @@ const styles = {
 	},
 };
 
-export const view = connectedView(View);
+export const view = connectedView<ViewProps>(View);
 export const events = {
 	input$: fromComponent(SearchInput),
 	resultsList$: fromComponent(ResultsList),
