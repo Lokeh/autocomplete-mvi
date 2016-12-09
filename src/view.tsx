@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observeComponent, fromComponent } from 'observe-component/rx';
-import { connectedView } from './libs/connectedView';
+import { connectedView } from './libs/drivers/ReactDriver';
 
 export interface ViewProps {
 	value: string,
@@ -63,8 +63,8 @@ const styles = {
 	},
 };
 
-export const view = connectedView<ViewProps>(View);
 export const events = {
 	input$: fromComponent(SearchInput),
 	resultsList$: fromComponent(ResultsList),
 };
+export const view = connectedView<ViewProps, any>(View, events);

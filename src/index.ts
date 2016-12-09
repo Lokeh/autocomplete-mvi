@@ -1,20 +1,25 @@
 import * as Rx from 'rx';
-import * as MVI from './libs/run';
+import * as MVI from './libs/app';
 import { makeReactDriver } from './libs/drivers/ReactDriver';
+import { makeFetchDriver } from './libs/drivers/FetchDriver';
 
 // app
 import { view } from './view';
 import { model } from './model';
 import { intent } from './intent';
 
-function main() {
+function main(sources: MVI.Sources) {
+	console.log('[main]', sources);
+	const { view$, events } = view(model(intent));
 	return {
-		react: view(model(intent)),
+		react: view$,
 	};
 }
 
 const drivers: MVI.Drivers = {
 	react: makeReactDriver(document.getElementById('app')),
+	fetch: makeFetchDriver(),
 };
 
-MVI.run(main, drivers);
+const { run } = MVI.App(main, drivers);
+run();

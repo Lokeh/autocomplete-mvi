@@ -42,7 +42,6 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		}));
 
 	const results$ = intents.inputChange$
-		.debounce(300)
 		.flatMapLatest((value) => {
 			if (!value) return Rx.Observable.just({
 						results: [],
@@ -59,6 +58,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 					};
 				});
 		})
+		.debounce(300)
 		.map((newState: Model) => (oldState: Model) => newState);
 
 	const autoComplete$ = intents.resultsClicks$
