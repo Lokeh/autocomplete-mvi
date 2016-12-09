@@ -1,20 +1,20 @@
 import 'whatwg-fetch';
-import { Sinks, Source } from '../run';
+import { Sinks, Sink } from '../run';
 
-export interface FetchSource extends Sinks {
-    fetch: Source<any>,
+export interface FetchSink extends Sinks {
+    fetch: Sink<any>,
 };
 
 export interface FetchDriver {
-    (sinks: FetchSource): void;
+    (sinks: FetchSink): void;
 };
 
-function makeFetchDriver(url: string): FetchDriver;
-function makeFetchDriver(url: (param: string) => string): FetchDriver {
+function makeFetchDriver(url: (param: string) => string): FetchDriver;
+function makeFetchDriver(url: string): FetchDriver {
     if (typeof url === "string") {
         return (sinks) => {
             const source = sinks.fetch;
-
+            sinks.
         }
     }
     else {
