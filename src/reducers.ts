@@ -42,8 +42,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		}));
 
 	const results$ = intents.responses$
-		.flatMap((res: Response) => Rx.Observable.fromPromise(res.json()))
-		.map((body: any) => {
+		.map((body: any[]) => {
 			const results = body[1];
 			return ({ value, showResults }: Model): Model => ({
 				value,

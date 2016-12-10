@@ -4,7 +4,7 @@ export interface Intents {
 	inputBlur$: Rx.Observable<React.SyntheticEvent<any>>,
 	resultsClicks$: Rx.Observable<string>,
 	searchRequest$: Rx.Observable<any>,
-	responses$: Rx.Observable<Response>,
+	responses$: Rx.Observable<any>,
 };
 
 export function intents(responses$: Rx.Observable<any>): Intents {

@@ -7,12 +7,12 @@ export interface FetchSink extends Sinks {
 };
 
 export interface FetchSourceDefinition extends SourceDefinition {
-    source: Rx.Observable<Response>,
+    source: Rx.Observable<any>,
     dispose: DisposeFn
 }
 
 export interface FetchSource extends Sources {
-    fetch: Rx.Observable<Response>,
+    fetch: Rx.Observable<any>,
 }
 
 export interface FetchDriver extends Driver {
@@ -35,6 +35,23 @@ export function makeFetchDriver(): FetchDriver {
             .flatMapLatest((params: FetchParams) => {
                 return Rx.Observable.fromPromise(fetch((params.url)))
             });
+        const subscription = source.subscribe();
+        const dispose = () => subscription.dispose();
+
+        return {
+            source,
+            dispose,
+        };
+    };
+}
+
+export function makeJSONDriver(): FetchDriver {
+    return (sinkProxies: FetchSink) => {
+        const source = sinkProxies.fetch
+            .flatMapLatest((params: FetchParams) => {
+                return Rx.Observable.fromPromise(fetch((params.url)))
+            })
+            .flatMap((res: Response) => Rx.Observable.fromPromise(res.json()));
         const subscription = source.subscribe();
         const dispose = () => subscription.dispose();
 

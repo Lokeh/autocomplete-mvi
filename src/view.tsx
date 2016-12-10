@@ -17,7 +17,6 @@ const SearchInput = observeComponent<React.HTMLProps<any>>('onChange', 'onBlur')
 
 // View :: state -> DOM
 function View({ value, results = [], showResults = false }: ViewProps) {
-	console.log('[view]', results);
 	return (
 		<div>
 			<SearchInput style={styles.search} type="text" value={value} />

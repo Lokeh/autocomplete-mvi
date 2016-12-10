@@ -8,7 +8,7 @@ import {
 	ReactDriverDefinition
 } from './libs/drivers/ReactDriver';
 import {
-	makeFetchDriver,
+	makeJSONDriver,
 	FetchDriver,
 	FetchSink,
 	FetchSource,
@@ -30,7 +30,7 @@ function generateRequest(term$: Rx.Observable<String>) {
 
 function main({ fetch }: Sources): ReactSink & FetchSink {
 	const responses$ = fetch;
-	const actions: Intents = intents(responses$);
+	const actions = intents(responses$);
 	const { view$, events } = view(model(actions));
 	return {
 		reactDOM: view$,
@@ -42,7 +42,7 @@ type Drivers = ReactDriverDefinition & FetchDriverDefinition;
 
 const drivers: Drivers = {
 	reactDOM: makeReactDOMDriver(document.getElementById('app')),
-	fetch: makeFetchDriver(),
+	fetch: makeJSONDriver(),
 };
 
 const { run } = MVI.App(main, drivers);
