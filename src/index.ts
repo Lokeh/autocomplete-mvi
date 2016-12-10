@@ -18,8 +18,8 @@ function generateRequest(term$: Rx.Observable<String>) {
 	}));
 }
 
-function main({ fetch }: Sources): Sinks {
-	const responses$ = fetch;
+function main(sources: Sources): Sinks {
+	const responses$ = sources.fetch;
 	const actions = intents(responses$);
 	const { view$, events } = view(model(actions));
 	return {

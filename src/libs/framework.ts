@@ -50,6 +50,11 @@ function getSources<S extends Sources>(definitions: _.Dictionary<SourceDefinitio
 	return <S>mapValues(definitions, (definition) => definition.source);
 }
 
+function createSinkDisposal(definitions: _.Dictionary<SourceDefinition>) {
+	const disposes = map(definitions, (definition) => definition.dispose);
+	return () => disposes.forEach((dispose) => dispose());
+}
+
 function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 	console.log('[link] linking');
 	const subscriptions = map(sinks, (sink, name) => {
@@ -69,9 +74,13 @@ export function App<S extends Sources, D extends Drivers>(
 	drivers: D
 ): AppExecution {
 	console.log('[App]', 'initialized');
+
 	const sinkProxies = createProxies(drivers);
 	console.log('[App] sinkProxies', sinkProxies);
+
 	const sourceDefs = executeDrivers(drivers, sinkProxies);
+
+	const disposeSinks = createSinkDisposal(sourceDefs); 
 	const sources = getSources<S>(sourceDefs);
 	console.log('[App] sources', sources);
 	const sinks = main(sources);
@@ -81,7 +90,11 @@ export function App<S extends Sources, D extends Drivers>(
 		sources,
 		run: () => {
 			console.log('[run] running');
-			return link(sinks, sinkProxies)
+			const disposeProxies = link(sinks, sinkProxies);
+			return () => {
+				disposeSinks();
+				disposeProxies();
+			};
 		},
 	};
 }
