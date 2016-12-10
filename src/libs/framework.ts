@@ -46,8 +46,8 @@ function executeDrivers(drivers: Drivers, sinkProxies: SinkProxies) {
 	);
 }
 
-function getSources(definitions: _.Dictionary<SourceDefinition>): Sources {
-	return mapValues(definitions, (definition) => definition.source);
+function getSources<S extends Sources>(definitions: _.Dictionary<SourceDefinition>): S {
+	return <S>mapValues(definitions, (definition) => definition.source);
 }
 
 function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
@@ -64,15 +64,15 @@ function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 	};
 }
 
-export function App(
-	main: (sources?: Sources) => Sinks,
-	drivers: Drivers
+export function App<S extends Sources, D extends Drivers>(
+	main: (sources?: S) => Sinks,
+	drivers: D
 ): AppExecution {
 	console.log('[App]', 'initialized');
 	const sinkProxies = createProxies(drivers);
 	console.log('[App] sinkProxies', sinkProxies);
 	const sourceDefs = executeDrivers(drivers, sinkProxies);
-	const sources = getSources(sourceDefs);
+	const sources = getSources<S>(sourceDefs);
 	console.log('[App] sources', sources);
 	const sinks = main(sources);
 	console.log('[App] sinks', sinks);

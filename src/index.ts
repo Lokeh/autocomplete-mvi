@@ -1,17 +1,16 @@
 import * as Rx from 'rx';
 import * as MVI from './libs/framework';
-import {
-	makeReactDOMDriver,
-} from './libs/drivers/ReactDriver';
-import {
-	makeJSONDriver,
-	FetchSource,
-} from './libs/drivers/FetchDriver';
+import * as RD from './libs/drivers/ReactDriver';
+import * as FD from './libs/drivers/FetchDriver';
 
 // app
 import { view } from './view';
 import { model } from './model';
 import { intents, Intents } from './intent';
+
+type Sources = RD.ReactSource & FD.FetchSource;
+type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition;
+type Sinks = RD.ReactSink & FD.FetchSink;
 
 function generateRequest(term$: Rx.Observable<String>) {
 	return term$.map((term) => ({
@@ -19,7 +18,7 @@ function generateRequest(term$: Rx.Observable<String>) {
 	}));
 }
 
-function main({ fetch }: FetchSource): MVI.Sinks {
+function main({ fetch }: Sources): Sinks {
 	const responses$ = fetch;
 	const actions = intents(responses$);
 	const { view$, events } = view(model(actions));
@@ -29,8 +28,8 @@ function main({ fetch }: FetchSource): MVI.Sinks {
 	};
 }
 
-const { run } = MVI.App(main, {
-	reactDOM: makeReactDOMDriver(document.getElementById('app')),
-	fetch: makeJSONDriver(),
+const { run } = MVI.App<Sources, Drivers>(main, {
+	reactDOM: RD.makeReactDOMDriver(document.getElementById('app')),
+	fetch: FD.makeJSONDriver(),
 });
 run();
