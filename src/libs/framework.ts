@@ -59,8 +59,7 @@ function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 	console.log('[link] linking');
 	const subscriptions = map(sinks, (sink, name) => {
 		const proxy = sinkProxies[name];
-		console.log('[link] subscribing', name);
-		console.log('[link]', sink);
+		console.log('[link] subscribing to proxies', name);
 		return sink.subscribe(proxy);
 	});
 
@@ -76,15 +75,11 @@ export function App<S extends Sources, D extends Drivers>(
 	console.log('[App]', 'initialized');
 
 	const sinkProxies = createProxies(drivers);
-	console.log('[App] sinkProxies', sinkProxies);
-
 	const sourceDefs = executeDrivers(drivers, sinkProxies);
 
 	const disposeSinks = createSinkDisposal(sourceDefs); 
 	const sources = getSources<S>(sourceDefs);
-	console.log('[App] sources', sources);
 	const sinks = main(sources);
-	console.log('[App] sinks', sinks);
 	return {
 		sinks,
 		sources,

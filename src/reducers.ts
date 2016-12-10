@@ -24,37 +24,32 @@ import { Model } from './model';
 
 export type Reducer = (state: Model) => Model
 
+function createReducer(newState: Partial<Model>): Reducer {
+	return (oldState: Model) =>
+		Object.assign({}, oldState, newState);
+}
+
 // reducers :: Map<Observable<Delta>> -> Observable<Reducer>
 export function reducers(intents: Intents): Rx.Observable<Reducer> {
 	const value$ = intents.inputChange$
-		.map((value) => ({ results, showResults }: Model): Model => ({
-			results,
-			value,
-			showResults,
-		}));
+		.map((value) => createReducer({ value }));
 
 	const hideResults$ = intents.inputBlur$
 		.delay(300)
-		.map(() => ({ results, value }: Model): Model => ({
-			results,
-			value,
-			showResults: false,
-		}));
+		.map(() => createReducer({ showResults: false }));
 
 	const results$ = intents.responses$
 		.map((body: any[]) => {
 			const results = body[1];
-			return ({ value, showResults }: Model): Model => ({
-				value,
+			return createReducer({
 				results,
 				showResults: true,
-			})
+			});
 		});
 
 	const autoComplete$ = intents.resultsClicks$
-		.map((value) => ({ results, showResults }: Model): Model => ({
-			results,
-			value: value,
+		.map((value) => createReducer({
+			value,
 			showResults: false,
 		}));
 

@@ -1,4 +1,5 @@
 import { events } from './view';
+import { ComponentEvent } from 'observe-component/common/ComponentEvent';
 export interface Intents {
 	inputChange$: Rx.Observable<string>,
 	inputBlur$: Rx.Observable<React.SyntheticEvent<any>>,
@@ -7,13 +8,16 @@ export interface Intents {
 	responses$: Rx.Observable<any>,
 };
 
+function byType(desiredType: string): (event: ComponentEvent) => boolean {
+	return ({ type }: ComponentEvent) => type === desiredType;
+}
+
 export function intents(responses$: Rx.Observable<any>): Intents {
-	
 	const inputChange$ = events.input$
-			.filter(({ type }) => type === 'onChange')
+			.filter(byType('onChange'))
 			.map(({ value }): string => value.target.value);
 	const inputBlur$ = events.input$
-			.filter((({ type }) => type === 'onBlur'));
+			.filter(byType('onBlur'));
 	const resultsClicks$ = events.resultsList$
 			.map(({ value }): string => value.title);
 	const searchRequest$ = inputChange$

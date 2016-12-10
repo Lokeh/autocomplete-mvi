@@ -29,7 +29,10 @@ function View({ value, results = [], showResults = false }: ViewProps) {
 }
 
 const ResultsList = 
-	observeComponent<ResultsListProps>('onClick')(({ results, onClick }: ResultsListProps) => (
+	observeComponent<ResultsListProps>(
+		'onClick',
+		'onHover'
+	)(({ results, onClick }: ResultsListProps) => (
 		<ul style={styles.resultsBox}>
 			{results.map((title: string, i: number) => 
 				<li
