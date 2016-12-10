@@ -2,11 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
-import { Sinks, Sink, Sources, SourceDefinition, Drivers, Driver, DisposeFn } from '../app';
+import { Sinks, Sources, SourceDefinition, Drivers, Driver, DisposeFn } from '../framework';
 
 
 export interface ReactSink extends Sinks {
-	reactDOM: Sink<ViewDelta<any>>;
+	reactDOM: Rx.Observable<ViewDelta<any>>;
 };
 
 export interface ReactSourceDefinition extends SourceDefinition {

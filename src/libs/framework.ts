@@ -17,9 +17,8 @@ export interface Drivers {
 	[K: string]: Driver,
 };
 
-export type Sink<T> = Rx.Observable<T>;
 export interface Sinks {
-	[J: string]: Sink<any>,
+	[J: string]: Rx.Observable<any>,
 };
 export interface SinkProxies {
 	[L: string]: Rx.Subject<any>,
