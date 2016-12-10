@@ -6,22 +6,29 @@ export interface ViewProps {
 	value: string,
 	results: Object[],
 	showResults: boolean,
+	highlighted: number,
 };
 
 interface ResultsListProps {
 	results: Object[],
-	onClick: Function,
+	highlighted: number,
+	onClick?: Function,
+	onMouseEnter?: Function,
+	onMouseLeave?: Function,
 };
 
 const SearchInput = observeComponent<React.HTMLProps<any>>('onChange', 'onBlur')('input');
 
 // View :: state -> DOM
-function View({ value, results = [], showResults = false }: ViewProps) {
+function View({ value, results = [], showResults = false, highlighted = null }: ViewProps) {
 	return (
 		<div>
 			<SearchInput style={styles.search} type="text" value={value} />
 			{showResults ?
-				<ResultsList results={results} onClick={(): void => null} /> :
+				<ResultsList
+					results={results}
+					highlighted={highlighted}
+				/> :
 				null
 			}
 		</div>
@@ -31,14 +38,21 @@ function View({ value, results = [], showResults = false }: ViewProps) {
 const ResultsList = 
 	observeComponent<ResultsListProps>(
 		'onClick',
-		'onHover'
-	)(({ results, onClick }: ResultsListProps) => (
+		'onMouseEnter',
+		'onMouseLeave',
+	)(({ results, onClick, onMouseEnter, onMouseLeave, highlighted }: ResultsListProps) => (
 		<ul style={styles.resultsBox}>
 			{results.map((title: string, i: number) => 
 				<li
 					key={i}
 					onClick={() => onClick({ title })}
-					style={styles.result}
+					onMouseEnter={() => onMouseEnter(i)}
+					style={Object.assign(
+						{},
+						styles.result,
+						i === highlighted ? styles.highlighted : {},
+					)}
+					onMouseLeave={() => onMouseLeave()}
 				>
 					{title}
 				</li>
@@ -62,6 +76,9 @@ const styles = {
 		fontSize: 16,
 		border: "1px solid #d3d3d3",
 		padding: 5,
+	},
+	highlighted: {
+		backgroundColor: 'green',
 	},
 };
 

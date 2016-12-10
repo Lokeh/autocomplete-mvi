@@ -5,6 +5,8 @@ export interface Intents {
 	inputBlur$: Rx.Observable<React.SyntheticEvent<any>>,
 	resultsClicks$: Rx.Observable<string>,
 	searchRequest$: Rx.Observable<any>,
+	resultsHighlighted$: Rx.Observable<number>,
+	resultsUnhighlighted$: Rx.Observable<null>,
 	responses$: Rx.Observable<any>,
 };
 
@@ -19,7 +21,14 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	const inputBlur$ = events.input$
 			.filter(byType('onBlur'));
 	const resultsClicks$ = events.resultsList$
+			.filter(byType('onClick'))
 			.map(({ value }): string => value.title);
+	const resultsHighlighted$ = events.resultsList$
+			.filter(byType('onMouseEnter'))
+			.map(({ value }): number => value);
+	const resultsUnhighlighted$ = events.resultsList$
+		.filter(byType('onMouseLeave'))
+		.map(() => null);
 	const searchRequest$ = inputChange$
 			.debounce(300);
 	return {
@@ -27,6 +36,8 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		inputBlur$,
 		resultsClicks$,
 		searchRequest$,
+		resultsHighlighted$,
+		resultsUnhighlighted$,
 		responses$,
 	};
 }

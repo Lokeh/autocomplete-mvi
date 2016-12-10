@@ -46,6 +46,10 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 				showResults: true,
 			});
 		});
+	
+	const highlight$ =
+		Rx.Observable.merge(intents.resultsHighlighted$, intents.resultsUnhighlighted$)
+		.map((highlighted) => createReducer({ highlighted }));
 
 	const autoComplete$ = intents.resultsClicks$
 		.map((value) => createReducer({
@@ -53,5 +57,5 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			showResults: false,
 		}));
 
-	return Rx.Observable.merge(value$, results$, autoComplete$, hideResults$);
+	return Rx.Observable.merge(value$, results$, autoComplete$, hideResults$, highlight$);
 }

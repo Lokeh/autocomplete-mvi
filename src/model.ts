@@ -7,6 +7,7 @@ export interface Model {
 	value: string,
 	results: string[],
 	showResults: boolean,
+	highlighted: number | null,
 };
 
 // model :: Map<Observable<Delta>> -> Observable<State>
@@ -16,6 +17,7 @@ export function model(intents: Intents): Rx.Observable<Model> {
 			value: '',
 			results: [],
 			showResults: false,
+			highlighted: null,
 		})
 		.scan((state: Model, reducer: Reducer) => reducer(state));
 }
