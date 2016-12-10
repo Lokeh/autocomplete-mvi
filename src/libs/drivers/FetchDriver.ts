@@ -1,41 +1,46 @@
 import 'whatwg-fetch';
 import * as Rx from 'rx';
-import { Source, Sinks, Sink, Driver, DisposeFn } from '../app';
+import { Sources, SourceDefinition, Sinks, Sink, Drivers, Driver, DisposeFn } from '../app';
 
 export interface FetchSink extends Sinks {
-    fetch: Sink<any>,
+    fetch: Sink<FetchParams>,
 };
 
-export interface FetchSource extends Source {
-    source: Rx.Observable<Response | FetchParams>,
+export interface FetchSourceDefinition extends SourceDefinition {
+    source: Rx.Observable<Response>,
     dispose: DisposeFn
 }
 
+export interface FetchSource extends Sources {
+    fetch: Rx.Observable<Response>,
+}
+
 export interface FetchDriver extends Driver {
-    stream: (sinks: FetchSink) => FetchSource,
+    (sinks: FetchSink): FetchSourceDefinition,
 };
 
 export interface FetchParams {
     url: string,
-    options: RequestInit,
-}
+    options?: RequestInit,
+};
+
+export interface FetchDriverDefinition extends Drivers {
+	fetch: FetchDriver,
+};
 
 
 export function makeFetchDriver(): FetchDriver {
-    return {
-        stream: (sinkProxies) => {
-            const source = sinkProxies.fetch
-                .filter((v) => !(v instanceof Response))
-                .flatMapLatest((params: FetchParams) => 
-                    Rx.Observable.fromPromise(fetch((params.url)))
-            );
-            const subscription = source.subscribe();
-            const dispose = () => subscription.dispose();
+    return (sinkProxies: FetchSink) => {
+        const source = sinkProxies.fetch
+            .flatMapLatest((params: FetchParams) => {
+                return Rx.Observable.fromPromise(fetch((params.url)))
+            });
+        const subscription = source.subscribe();
+        const dispose = () => subscription.dispose();
 
-            return {
-                source,
-                dispose,
-            };
-        }
-    }
+        return {
+            source,
+            dispose,
+        };
+    };
 }

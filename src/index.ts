@@ -1,23 +1,47 @@
 import * as Rx from 'rx';
 import * as MVI from './libs/app';
-import { makeReactDriver } from './libs/drivers/ReactDriver';
-import { makeFetchDriver } from './libs/drivers/FetchDriver';
+import {
+	makeReactDOMDriver,
+	ReactDriver,
+	ReactSink,
+	ReactSource,
+	ReactDriverDefinition
+} from './libs/drivers/ReactDriver';
+import {
+	makeFetchDriver,
+	FetchDriver,
+	FetchSink,
+	FetchSource,
+	FetchDriverDefinition
+} from './libs/drivers/FetchDriver';
 
 // app
 import { view } from './view';
 import { model } from './model';
-import { intent } from './intent';
+import { intents, Intents } from './intent';
 
-function main(sources: MVI.Sources) {
-	console.log('[main]', sources);
-	const { view$, events } = view(model(intent));
+type Sources = ReactSource & FetchSource;
+
+function generateRequest(term$: Rx.Observable<String>) {
+	return term$.map((term) => ({
+		url: `http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${term}&origin=localhost&origin=*`	
+	}));
+}
+
+function main({ fetch }: Sources): ReactSink & FetchSink {
+	const responses$ = fetch;
+	const actions: Intents = intents(responses$);
+	const { view$, events } = view(model(actions));
 	return {
-		react: view$,
+		reactDOM: view$,
+		fetch: generateRequest(actions.searchRequest$),
 	};
 }
 
-const drivers: MVI.Drivers = {
-	react: makeReactDriver(document.getElementById('app')),
+type Drivers = ReactDriverDefinition & FetchDriverDefinition;
+
+const drivers: Drivers = {
+	reactDOM: makeReactDOMDriver(document.getElementById('app')),
 	fetch: makeFetchDriver(),
 };
 

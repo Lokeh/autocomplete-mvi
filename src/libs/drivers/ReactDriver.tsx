@@ -2,41 +2,46 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
-import { Sinks, Sink, Source, Driver, DisposeFn } from '../app';
+import { Sinks, Sink, Sources, SourceDefinition, Drivers, Driver, DisposeFn } from '../app';
 
 
 export interface ReactSink extends Sinks {
-	react: Sink<ViewDelta<any>>;
+	reactDOM: Sink<ViewDelta<any>>;
 };
 
-export interface ReactSource extends Source {
+export interface ReactSourceDefinition extends SourceDefinition {
 	source: Rx.Observable<void>,
 	dispose: DisposeFn,
 }
 
-export interface ReactDriver extends Driver {
-	render: (sinks: ReactSink) => ReactSource;
+export interface ReactSource {
+	reactDOM: Rx.Observable<void>,
 };
 
-export function makeReactDriver(DOMNode: Element): ReactDriver {
+export interface ReactDriver extends Driver {
+	(sinks: ReactSink): ReactSourceDefinition;
+};
+
+export interface ReactDriverDefinition extends Drivers {
+	reactDOM: ReactDriver,
+};
+
+export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 	console.log('[ReactDriver] initiated');
-	return {
-		render: (sinkProxies) => {
-			console.log('[ReactDriver] rendering started');
-			const proxy = sinkProxies.react;
-			console.log('[ReactDriver]', proxy);
-			// proxy.subscribe((v) => console.log(v));
-			const source = proxy.map(({ View, state }) => {
-				console.log('[ReactDriver] rendering');
-				ReactDOM.render(<View {...state} />, DOMNode);
-			});
-			const subscription = source.subscribe();
-			const dispose = () => subscription.dispose();
-			return {
-				source,
-				dispose,	
-			};
-		},
+	return (sinkProxies: ReactSink) => {
+		console.log('[ReactDriver] rendering started');
+		const proxy = sinkProxies.reactDOM;
+		// proxy.subscribe((v) => console.log(v));
+		const source = proxy.map(({ View, state }) => {
+			console.log('[ReactDriver] rendering');
+			ReactDOM.render(<View {...state} />, DOMNode);
+		});
+		const subscription = source.subscribe();
+		const dispose = () => subscription.dispose();
+		return {
+			source,
+			dispose,	
+		};
 	};
 }
 

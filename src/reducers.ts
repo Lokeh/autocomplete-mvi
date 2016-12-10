@@ -41,25 +41,16 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			showResults: false,
 		}));
 
-	const results$ = intents.inputChange$
-		.flatMapLatest((value) => {
-			if (!value) return Rx.Observable.just({
-						results: [],
-						value,
-						showResults: false,
-					});
-			return getResults(value)
-				.then((res: any): any => res.json())
-				.then((body: [string[]]): any => {
-					return {
-						results: body[1],
-						value,
-						showResults: true,
-					};
-				});
-		})
-		.debounce(300)
-		.map((newState: Model) => (oldState: Model) => newState);
+	const results$ = intents.responses$
+		.flatMap((res: Response) => Rx.Observable.fromPromise(res.json()))
+		.map((body: any) => {
+			const results = body[1];
+			return ({ value, showResults }: Model): Model => ({
+				value,
+				results,
+				showResults: true,
+			})
+		});
 
 	const autoComplete$ = intents.resultsClicks$
 		.map((value) => ({ results, showResults }: Model): Model => ({

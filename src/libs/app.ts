@@ -1,18 +1,17 @@
-import { mapValues, forEach } from 'lodash';
+import { mapValues, map, forEach } from 'lodash';
 
 export type DisposeFn = () => void;
-export interface Source {
+type Source<T> = Rx.Observable<T>;
+export interface SourceDefinition {
 	source: Rx.Observable<any>,
 	dispose: DisposeFn
 };
 export interface Sources {
-	[M: string]: {
-		[N: string]: Source,
-	}
+	[N: string]: Source<any>,
 };
 
 export interface Driver {
-	[I: string]: (sinks: Sinks) => Source,
+	(sinks: Sinks): SourceDefinition,
 };
 export interface Drivers {
 	[K: string]: Driver,
@@ -26,10 +25,14 @@ export interface SinkProxies {
 	[L: string]: Rx.Subject<any>,
 }
 
+export interface RunFn {
+	(): DisposeFn;
+};
+
 export interface AppExecution {
 	sinks: Sinks,
 	sources: Sources,
-	run: () => void
+	run: RunFn,
 };
 
 function createProxies(drivers: Drivers): SinkProxies {
@@ -38,22 +41,28 @@ function createProxies(drivers: Drivers): SinkProxies {
 	});
 }
 
-function executeDrivers(drivers: Drivers, sinkProxies: SinkProxies): Sources {
+function executeDrivers(drivers: Drivers, sinkProxies: SinkProxies) {
 	return mapValues(drivers, (driver, key) =>
-		mapValues(driver, (sourceCreator) =>
-			sourceCreator(sinkProxies)
-		)
+		driver(sinkProxies)
 	);
 }
 
-function link(sinks: Sinks, sinkProxies: SinkProxies) {
+function getSources(definitions: _.Dictionary<SourceDefinition>): Sources {
+	return mapValues(definitions, (definition) => definition.source);
+}
+
+function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 	console.log('[link] linking');
-	const subscriptions = mapValues(sinks, (sink, name) => {
+	const subscriptions = map(sinks, (sink, name) => {
 		const proxy = sinkProxies[name];
 		console.log('[link] subscribing', name);
 		console.log('[link]', sink);
 		return sink.subscribe(proxy);
 	});
+
+	return () => {
+		subscriptions.forEach((subscription) => subscription.dispose());
+	};
 }
 
 export function App(
@@ -63,7 +72,8 @@ export function App(
 	console.log('[App]', 'initialized');
 	const sinkProxies = createProxies(drivers);
 	console.log('[App] sinkProxies', sinkProxies);
-	const sources = executeDrivers(drivers, sinkProxies);
+	const sourceDefs = executeDrivers(drivers, sinkProxies);
+	const sources = getSources(sourceDefs);
 	console.log('[App] sources', sources);
 	const sinks = main(sources);
 	console.log('[App] sinks', sinks);
@@ -72,7 +82,7 @@ export function App(
 		sources,
 		run: () => {
 			console.log('[run] running');
-			link(sinks, sinkProxies)
+			return link(sinks, sinkProxies)
 		},
 	};
 }
