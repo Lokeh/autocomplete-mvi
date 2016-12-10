@@ -6,7 +6,7 @@ import * as FD from './libs/drivers/FetchDriver';
 // app
 import { view } from './view';
 import { model } from './model';
-import { intents, Intents } from './intent';
+import { intents } from './intent';
 
 type Sources = RD.ReactSource & FD.FetchSource;
 type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition;
