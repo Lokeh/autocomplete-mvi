@@ -78,7 +78,7 @@ const styles = {
 		padding: 5,
 	},
 	highlighted: {
-		backgroundColor: 'green',
+		backgroundColor: 'rgba(16, 127, 242, .2)',
 	},
 };
 
