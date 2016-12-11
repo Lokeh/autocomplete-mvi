@@ -60,8 +60,8 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		.map((highlighted) => createReducer({ highlighted }));
 
 	const highlightMoveUp$ = intents.arrowUpPressed$
-		.map(({ value }) => (oldState: Model): Model => {
-			value.preventDefault();
+		.map(({ value: event }) => (oldState: Model): Model => {
+			event.preventDefault();
 			const isShown = oldState.showResults && oldState.results.length;
 			const highlighted = !isShown ? null :
 				(oldState.highlighted === null) ? 0 : 
@@ -72,10 +72,9 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		});
 
 	const highlightMoveDown$ = intents.arrowDownPressed$
-		.map(({ value }) => (oldState: Model): Model => {
-			value.preventDefault();
+		.map(({ value: event }) => (oldState: Model): Model => {
+			event.preventDefault();
 			const isShown = oldState.showResults && oldState.results.length;
-			console.log('[highlightMoveDown]', oldState);
 			const highlighted = !isShown ? null :
 				(oldState.highlighted === null) ? 0 :
 				oldState.highlighted < 9 ? oldState.highlighted+1 : 0;
@@ -84,12 +83,13 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			});
 		});
 
-	const completeHighlight$ = intents.enterPressed$
-		.map(() => (oldState: Model): Model => {
+	const completeSelectedHighlight$ = intents.enterPressed$
+		.map(({ value: event }) => (oldState: Model): Model => {
 			const value = oldState.results[oldState.highlighted];
 			if (oldState.highlighted === null) {
 				return oldState;
 			}
+			event.preventDefault();
 			return Object.assign({}, oldState, {
 				value,
 				showResults: false,
@@ -112,7 +112,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		autoComplete$,
 		hideResults$,
 		highlight$,
-		completeHighlight$,
+		completeSelectedHighlight$,
 		highlightMoveUp$,
 		highlightMoveDown$,
 	);
