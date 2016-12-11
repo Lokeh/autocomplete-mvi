@@ -56,9 +56,6 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		.filter(byType('onKeyDown'))
 		.filter(byKey('ArrowUp'));
 
-	const test = events.input$
-		.subscribe((s) => console.log('[intents]', s.type, s.value.key));
-
 	return {
 		inputChange$,
 		inputBlur$,
