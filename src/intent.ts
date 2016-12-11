@@ -2,13 +2,15 @@ import { events } from './view';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
 export interface Intents {
 	inputChange$: Rx.Observable<string>,
-	inputBlur$: Rx.Observable<React.SyntheticEvent<any>>,
+	inputBlur$: Rx.Observable<ComponentEvent>,
 	resultsClicks$: Rx.Observable<string>,
 	searchRequest$: Rx.Observable<any>,
 	resultsHighlighted$: Rx.Observable<number>,
 	resultsUnhighlighted$: Rx.Observable<null>,
 	responses$: Rx.Observable<any>,
-	enterPressed$: Rx.Observable<React.SyntheticEvent<any>>,
+	enterPressed$: Rx.Observable<ComponentEvent>,
+	arrowDownPressed$: Rx.Observable<ComponentEvent>,
+	arrowUpPressed$: Rx.Observable<ComponentEvent>,
 };
 
 function byType(desiredType: string): (event: ComponentEvent) => boolean {
@@ -46,9 +48,13 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		.filter(byType('onKeyPress'))
 		.filter(byKey('Enter'));
 	
-	const arrowPressed = events.input$
-		.filter(byType('onKeyPress'))
-		.filter(byKey('Enter'));
+	const arrowDownPressed$ = events.input$
+		.filter(byType('onKeyDown'))
+		.filter(byKey('ArrowDown'));
+
+	const arrowUpPressed$ = events.input$
+		.filter(byType('onKeyDown'))
+		.filter(byKey('ArrowUp'));
 
 	const test = events.input$
 		.subscribe((s) => console.log('[intents]', s.type, s.value.key));
@@ -62,5 +68,7 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		resultsUnhighlighted$,
 		responses$,
 		enterPressed$,
+		arrowDownPressed$,
+		arrowUpPressed$,
 	};
 }
