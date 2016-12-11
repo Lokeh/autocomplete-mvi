@@ -24,7 +24,8 @@ import { Model } from './model';
 
 export type Reducer = (state: Model) => Model
 
-function createReducer(newState: Partial<Model>): Reducer {
+function createReducer(arg: Partial<Model>): Reducer {
+	const newState = arg;
 	return (oldState: Model) =>
 		Object.assign({}, oldState, newState);
 }
@@ -39,6 +40,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		.map(() => createReducer({
 			showResults: false,
 			results: [],
+			highlighted: null,
 		}));
 
 	const results$ = intents.responses$
@@ -51,14 +53,35 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		});
 	
 	const highlight$ =
-		Rx.Observable.merge(intents.resultsHighlighted$, intents.resultsUnhighlighted$)
+		Rx.Observable.merge(
+			intents.resultsHighlighted$,
+			intents.resultsUnhighlighted$
+		)
 		.map((highlighted) => createReducer({ highlighted }));
+
+	const highlightMoved$ = intents;
+
+	const highlightSelected$ = intents.enterPressed$
+		.map(() => (oldState: Model): Model => {
+			const value = oldState.results[oldState.highlighted];
+			if (oldState.highlighted === null) {
+				return oldState;
+			}
+			return Object.assign({}, oldState, {
+				value,
+				showResults: false,
+				results: [],
+				highlighted: null,
+			});
+		});
 
 	const autoComplete$ = intents.resultsClicks$
 		.map((value) => createReducer({
 			value,
 			showResults: false,
+			highlighted: null,
+			results: [],
 		}));
 
-	return Rx.Observable.merge(value$, results$, autoComplete$, hideResults$, highlight$);
+	return Rx.Observable.merge(value$, results$, autoComplete$, hideResults$, highlight$, highlightSelected$);
 }

@@ -8,10 +8,15 @@ export interface Intents {
 	resultsHighlighted$: Rx.Observable<number>,
 	resultsUnhighlighted$: Rx.Observable<null>,
 	responses$: Rx.Observable<any>,
+	enterPressed$: Rx.Observable<React.SyntheticEvent<any>>,
 };
 
 function byType(desiredType: string): (event: ComponentEvent) => boolean {
 	return ({ type }: ComponentEvent) => type === desiredType;
+}
+
+function byKey(key: string): (event: ComponentEvent) => boolean {
+	return ({ value }: ComponentEvent) => value.key === key; 
 }
 
 export function intents(responses$: Rx.Observable<any>): Intents {
@@ -37,12 +42,17 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	const searchRequest$ = inputChange$
 		.debounce(300);
 
-	const onKeyUp$ = events.input$
-		.filter(byType('onKeyUp'))
-		.doOnNext(({ value }: any) => {
-			console.log(value);
-		});
+	const enterPressed$ = events.input$
+		.filter(byType('onKeyPress'))
+		.filter(byKey('Enter'));
 	
+	const arrowPressed = events.input$
+		.filter(byType('onKeyPress'))
+		.filter(byKey('Enter'));
+
+	const test = events.input$
+		.subscribe((s) => console.log('[intents]', s.type, s.value.key));
+
 	return {
 		inputChange$,
 		inputBlur$,
@@ -51,5 +61,6 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		resultsHighlighted$,
 		resultsUnhighlighted$,
 		responses$,
+		enterPressed$,
 	};
 }
