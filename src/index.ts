@@ -13,9 +13,11 @@ type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition;
 type Sinks = RD.ReactSink & FD.FetchSink;
 
 function generateRequest(term$: Rx.Observable<String>) {
-	return term$.map((term) => ({
-		url: `http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${term}&origin=localhost&origin=*`	
-	}));
+	return term$
+		.filter((term) => term !== "")
+		.map((term) => ({
+			url: `http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${term}&origin=localhost&origin=*`	
+		}));
 }
 
 function main(sources: Sources): Sinks {

@@ -2,7 +2,15 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
-import { Sinks, Sources, SourceDefinition, Drivers, Driver, DisposeFn } from '../framework';
+import {
+	Sinks,
+	Sources,
+	SourceDefinition,
+	Drivers,
+	Driver,
+	DisposeFn,
+	App,
+} from '../framework';
 
 
 export interface ReactSink extends Sinks {
@@ -31,7 +39,6 @@ export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 	return (sinkProxies: ReactSink) => {
 		console.log('[ReactDriver] rendering started');
 		const proxy = sinkProxies.reactDOM;
-		// proxy.subscribe((v) => console.log(v));
 		const source = proxy.map(({ View, state }) => {
 			console.log('[ReactDriver] rendering');
 			ReactDOM.render(<View {...state} />, DOMNode);

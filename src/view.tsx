@@ -17,10 +17,11 @@ interface ResultsListProps {
 	onMouseLeave?: Function,
 };
 
-const SearchInput = observeComponent<React.HTMLProps<any>>('onChange', 'onBlur')('input');
+const SearchInput = observeComponent<React.HTMLProps<any>>('onChange', 'onBlur', 'onKeyUp')('input');
 
 // View :: state -> DOM
 function View({ value, results = [], showResults = false, highlighted = null }: ViewProps) {
+	console.log(value, results, showResults);
 	return (
 		<div>
 			<SearchInput style={styles.search} type="text" value={value} />

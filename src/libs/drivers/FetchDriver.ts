@@ -48,7 +48,7 @@ export function makeFetchDriver(): FetchDriver {
 export function makeJSONDriver(): FetchDriver {
     return (sinkProxies: FetchSink) => {
         const source = sinkProxies.fetch
-            .flatMapLatest((params: FetchParams) => {
+            .flatMap((params: FetchParams) => {
                 return Rx.Observable.fromPromise(fetch((params.url)))
             })
             .flatMap((res: Response) => Rx.Observable.fromPromise(res.json()));

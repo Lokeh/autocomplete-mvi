@@ -16,21 +16,33 @@ function byType(desiredType: string): (event: ComponentEvent) => boolean {
 
 export function intents(responses$: Rx.Observable<any>): Intents {
 	const inputChange$ = events.input$
-			.filter(byType('onChange'))
-			.map(({ value }): string => value.target.value);
+		.filter(byType('onChange'))
+		.map(({ value }): string => value.target.value);
+
 	const inputBlur$ = events.input$
-			.filter(byType('onBlur'));
+		.filter(byType('onBlur'));
+
 	const resultsClicks$ = events.resultsList$
-			.filter(byType('onClick'))
-			.map(({ value }): string => value.title);
+		.filter(byType('onClick'))
+		.map(({ value }): string => value.title);
+
 	const resultsHighlighted$ = events.resultsList$
-			.filter(byType('onMouseEnter'))
-			.map(({ value }): number => value);
+		.filter(byType('onMouseEnter'))
+		.map(({ value }): number => value);
+
 	const resultsUnhighlighted$ = events.resultsList$
 		.filter(byType('onMouseLeave'))
 		.map(() => null);
+
 	const searchRequest$ = inputChange$
-			.debounce(300);
+		.debounce(300);
+
+	const onKeyUp$ = events.input$
+		.filter(byType('onKeyUp'))
+		.doOnNext(({ value }: any) => {
+			console.log(value);
+		});
+	
 	return {
 		inputChange$,
 		inputBlur$,

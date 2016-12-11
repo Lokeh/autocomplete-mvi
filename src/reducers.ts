@@ -34,9 +34,12 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 	const value$ = intents.inputChange$
 		.map((value) => createReducer({ value }));
 
-	const hideResults$ = intents.inputBlur$
-		.delay(300)
-		.map(() => createReducer({ showResults: false }));
+	const hideResults$ = Rx.Observable
+		.merge(<Rx.Observable<any>>intents.inputBlur$, intents.inputChange$.filter((v) => v === ""))
+		.map(() => createReducer({
+			showResults: false,
+			results: [],
+		}));
 
 	const results$ = intents.responses$
 		.map((body: any[]) => {
