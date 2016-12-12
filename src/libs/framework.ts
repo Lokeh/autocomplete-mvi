@@ -28,11 +28,11 @@ export interface RunFn {
 	(): DisposeFn;
 };
 
-export interface AppExecution {
-	sinks: Sinks,
-	sources: Sources,
-	run: RunFn,
-};
+// export interface AppExecution {
+// 	sinks: Sinks,
+// 	sources: Sources,
+// 	run: RunFn,
+// };
 
 function createProxies(drivers: Drivers): SinkProxies {
 	return mapValues(drivers, (driver, driverName) => {
@@ -71,7 +71,7 @@ function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 export function App<S extends Sources, D extends Drivers>(
 	main: (sources?: S) => Sinks,
 	drivers: D
-): AppExecution {
+) {
 	console.log('[App]', 'initialized');
 
 	const sinkProxies = createProxies(drivers);

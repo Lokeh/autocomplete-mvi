@@ -53,8 +53,8 @@ export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 }
 
 // connectedView :: View -> Observable<State> -> Observable<{View, State}>
-export function connectedView<P, E>(View: Component, events: E): (model: Rx.Observable<P>) => any {
-	return function connectViewTo(model: Rx.Observable<P>): any {
+export function connectedView<P, E>(View: Component, events: E) {
+	return function connectViewTo(model: Rx.Observable<P>) {
 		return {
 			view$: model.map((state: P): ViewDelta<P> => ({ View, state })),
 			events,
