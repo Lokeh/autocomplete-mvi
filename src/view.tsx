@@ -52,7 +52,7 @@ const ResultsList =
 				{results.map((title: string, i: number) => 
 					<li
 						key={i}
-						onClick={() => onClick({ title })}
+						onClick={() => onClick(title)}
 						onMouseEnter={() => onMouseEnter(i)}
 						style={Object.assign(
 							{},

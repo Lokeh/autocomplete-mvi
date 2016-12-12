@@ -32,18 +32,17 @@ function createReducer(arg: Partial<Model>): Reducer {
 
 // reducers :: Map<Observable<Delta>> -> Observable<Reducer>
 export function reducers(intents: Intents): Rx.Observable<Reducer> {
-	const value$ = intents.inputChange$
+	const valueReducer$ = intents.value$
 		.map((value) => createReducer({ value }));
 
-	const hideResults$ = Rx.Observable
-		.merge(<Rx.Observable<any>>intents.inputBlur$, intents.inputChange$.filter((v) => v === ""))
+	const hideResultsReducer$ = intents.hideResults$
 		.map(() => createReducer({
 			showResults: false,
 			results: [],
 			highlighted: null,
 		}));
 
-	const results$ = intents.responses$
+	const resultsReducer$ = intents.results$
 		.map((body: any[]) => {
 			const results = body[1];
 			return createReducer({
@@ -52,14 +51,10 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			});
 		});
 	
-	const highlight$ =
-		Rx.Observable.merge(
-			intents.resultsHighlighted$,
-			intents.resultsUnhighlighted$
-		)
+	const highlightReducer$ = intents.highlight$
 		.map((highlighted) => createReducer({ highlighted }));
 
-	const highlightMoveUp$ = intents.arrowUpPressed$
+	const highlightMoveUpReducer$ = intents.highlightMoveUp$
 		.map(({ value: event }) => (oldState: Model): Model => {
 			event.preventDefault();
 			const isShown = oldState.showResults && oldState.results.length;
@@ -71,7 +66,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			});
 		});
 
-	const highlightMoveDown$ = intents.arrowDownPressed$
+	const highlightMoveDownReducer$ = intents.highlightMoveDown$
 		.map(({ value: event }) => (oldState: Model): Model => {
 			event.preventDefault();
 			const isShown = oldState.showResults && oldState.results.length;
@@ -83,7 +78,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			});
 		});
 
-	const completeSelectedHighlight$ = intents.enterPressed$
+	const completeSelectedHighlightReducer$ = intents.completeSelectedHighlight$
 		.map(({ value: event }) => (oldState: Model): Model => {
 			const value = oldState.results[oldState.highlighted];
 			if (oldState.highlighted === null) {
@@ -98,7 +93,7 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 			});
 		});
 
-	const autoComplete$ = intents.resultsClicks$
+	const autoCompleteReducer$ = intents.autoComplete$
 		.map((value) => createReducer({
 			value,
 			showResults: false,
@@ -107,13 +102,13 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		}));
 
 	return Rx.Observable.merge(
-		value$,
-		results$,
-		autoComplete$,
-		hideResults$,
-		highlight$,
-		completeSelectedHighlight$,
-		highlightMoveUp$,
-		highlightMoveDown$,
+		valueReducer$,
+		resultsReducer$,
+		autoCompleteReducer$,
+		hideResultsReducer$,
+		highlightReducer$,
+		completeSelectedHighlightReducer$,
+		highlightMoveUpReducer$,
+		highlightMoveDownReducer$,
 	);
 }

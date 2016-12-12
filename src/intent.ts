@@ -1,16 +1,25 @@
+import * as Rx from 'rx';
 import { events } from './view';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
 export interface Intents {
-	inputChange$: Rx.Observable<string>,
-	inputBlur$: Rx.Observable<ComponentEvent>,
-	resultsClicks$: Rx.Observable<string>,
+	// inputChange$: Rx.Observable<string>,
+	// inputBlur$: Rx.Observable<ComponentEvent>,
+	// resultsClicks$: Rx.Observable<string>,
 	searchRequest$: Rx.Observable<any>,
-	resultsHighlighted$: Rx.Observable<number>,
-	resultsUnhighlighted$: Rx.Observable<null>,
-	responses$: Rx.Observable<any>,
-	enterPressed$: Rx.Observable<ComponentEvent>,
-	arrowDownPressed$: Rx.Observable<ComponentEvent>,
-	arrowUpPressed$: Rx.Observable<ComponentEvent>,
+	// resultsHighlighted$: Rx.Observable<number>,
+	// resultsUnhighlighted$: Rx.Observable<null>,
+	// responses$: Rx.Observable<any>,
+	// enterPressed$: Rx.Observable<ComponentEvent>,
+	// arrowDownPressed$: Rx.Observable<ComponentEvent>,
+	// arrowUpPressed$: Rx.Observable<ComponentEvent>,
+	value$: Rx.Observable<string>,
+	hideResults$: Rx.Observable<boolean>, 
+	results$: Rx.Observable<any>,
+	highlight$: Rx.Observable<number>, 
+	highlightMoveUp$: Rx.Observable<ComponentEvent>,
+	highlightMoveDown$: Rx.Observable<ComponentEvent>,
+	completeSelectedHighlight$: Rx.Observable<ComponentEvent>,
+	autoComplete$: Rx.Observable<string>
 };
 
 function byType(desiredType: string): (event: ComponentEvent) => boolean {
@@ -22,50 +31,58 @@ function byKey(key: string): (event: ComponentEvent) => boolean {
 }
 
 export function intents(responses$: Rx.Observable<any>): Intents {
-	const inputChange$ = events.input$
+	const isHighlighted$ = Rx.Observable.merge(
+		events.resultsList$.filter(byType('onMouseEnter'))
+			.map(() => true),
+		events.resultsList$.filter(byType('onMouseLeave'))
+			.map(() => false),
+	);
+
+	const value$ = events.input$
 		.filter(byType('onChange'))
-		.map(({ value }): string => value.target.value);
+		.map(({ value: event }): string => event.target.value);
 
-	const inputBlur$ = events.input$
-		.filter(byType('onBlur'));
+	const hideResults$ = Rx.Observable.merge(
+		events.input$.filter(byType('onBlur')), //.withLatestFrom(isHighlighted$, (blur, isHighlighted) => ),
+		events.input$.filter(byType('onChange')).filter((v) => v === ""),
+	);
 
-	const resultsClicks$ = events.resultsList$
-		.filter(byType('onClick'))
-		.map(({ value }): string => value.title);
+	const highlight$ = Rx.Observable.merge(
+		events.resultsList$.filter(byType('onMouseEnter')).map(({ value }): number => value),
+		events.resultsList$.filter(byType('onMouseLeave')).map(() => null),
+	);
 
-	const resultsHighlighted$ = events.resultsList$
-		.filter(byType('onMouseEnter'))
-		.map(({ value }): number => value);
-
-	const resultsUnhighlighted$ = events.resultsList$
-		.filter(byType('onMouseLeave'))
-		.map(() => null);
-
-	const searchRequest$ = inputChange$
+	const searchRequest$ = value$
 		.debounce(300);
 
-	const enterPressed$ = events.input$
+	const completeSelectedHighlight$ = events.input$
 		.filter(byType('onKeyPress'))
 		.filter(byKey('Enter'));
 	
-	const arrowDownPressed$ = events.input$
+	const highlightMoveDown$ = events.input$
 		.filter(byType('onKeyDown'))
 		.filter(byKey('ArrowDown'));
 
-	const arrowUpPressed$ = events.input$
+	const highlightMoveUp$ = events.input$
 		.filter(byType('onKeyDown'))
 		.filter(byKey('ArrowUp'));
+	
+	const autoComplete$ = events.resultsList$
+		.filter(byType('onClick'))
+		.map(({ value }): string => value)
+		.doOnNext((v) => console.log('[intent]', v));
+	
+	const results$ = responses$;
 
 	return {
-		inputChange$,
-		inputBlur$,
-		resultsClicks$,
+		value$,
+		hideResults$,
+		highlight$,
+		completeSelectedHighlight$,
+		highlightMoveUp$,
+		highlightMoveDown$,
+		autoComplete$,
 		searchRequest$,
-		resultsHighlighted$,
-		resultsUnhighlighted$,
-		responses$,
-		enterPressed$,
-		arrowDownPressed$,
-		arrowUpPressed$,
+		results$,
 	};
 }
