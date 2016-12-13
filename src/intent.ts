@@ -43,7 +43,9 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		.map(({ value: event }): string => event.target.value);
 
 	const hideResults$ = Rx.Observable.merge(
-		events.input$.filter(byType('onBlur')), //.withLatestFrom(isHighlighted$, (blur, isHighlighted) => ),
+		events.input$.filter(byType('onBlur'))
+			.withLatestFrom(isHighlighted$, (blur, isHighlighted) => isHighlighted)
+			.filter((v) => !v),
 		events.input$.filter(byType('onChange')).filter((v) => v === ""),
 	);
 
