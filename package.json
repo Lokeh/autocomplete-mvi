@@ -1,7 +1,7 @@
 {
-  "name": "autocomplete-obs",
+  "name": "autocomplete-mvi",
   "version": "0.0.1",
-  "description": "Autocomplete input using React, observe-component and the MVI architecture",
+  "description": "Autocomplete combo box using React, observe-component and the MVI architecture",
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --content-base www/",
