@@ -26,7 +26,6 @@ const SearchInput = observeComponent<React.HTMLProps<any>>(
 
 // View :: state -> DOM
 function View({ value, results = [], showResults = false, highlighted = null }: ViewProps) {
-	console.log(value, results, showResults);
 	return (
 		<div style={styles.comboBox}>
 			<SearchInput style={styles.search} type="text" value={value} />

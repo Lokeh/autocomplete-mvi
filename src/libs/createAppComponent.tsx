@@ -1,10 +1,14 @@
 import * as React from 'react';
 import * as MVI from './framework';
 import * as RD from './drivers/ReactDriver';
+import { forEach } from 'lodash';
 
 export type Main = (sources: MVI.Sources) => MVI.Sinks;
+export interface PropsMap {
+	[K: string]: (state: any) => any
+};
 
-export function createAppComponent<P, S>(main: Main, drivers: MVI.Drivers) {
+export function createAppComponent<P, S>(main: Main, drivers: MVI.Drivers, propsMap: PropsMap) {
 	return class App extends React.Component<P, S> implements React.ComponentLifecycle<P, S> {
 		component: React.ComponentClass<P> | React.StatelessComponent<S> | string;
         dispose: MVI.DisposeFn;
@@ -16,6 +20,11 @@ export function createAppComponent<P, S>(main: Main, drivers: MVI.Drivers) {
                     if (!this.component) {
                         this.component = View;
                     }
+					forEach(propsMap, (v, k) => {
+						if (this.props[k]) {
+							this.props[k](v(state));
+						}
+					});
                 }),
             }
 			const { run } = MVI.App<MVI.Sources, MVI.Drivers>(main, extDrivers);

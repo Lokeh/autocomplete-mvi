@@ -43,6 +43,12 @@ const drivers: FD.FetchDriverDefinition = {
 // });
 // run();
 
-const ComboBox = createAppComponent(main, drivers);
+interface ComboBoxProps {
+	onChangeValue: (state: any) => any,
+};
 
-render(<ComboBox />, document.getElementById('app'));
+const ComboBox = createAppComponent<ComboBoxProps, any>(main, drivers, {
+	onChangeValue: (state: any) => state.value
+});
+
+render(<ComboBox onChangeValue={(v) => console.log(v)} />, document.getElementById('app'));
