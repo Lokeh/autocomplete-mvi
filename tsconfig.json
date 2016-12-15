@@ -9,8 +9,5 @@
     },
     "include": [
         "./src/**/*"
-    ]//,
-    // "files": [
-        // "node_modules/rx/ts/rx.all.d.ts"
-    // ]
+    ]
 }
