@@ -36,13 +36,31 @@ export interface ReactDriverDefinition extends Drivers {
 };
 
 export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
-	console.log('[ReactDriver] initiated');
+	console.log('[ReactDOMDriver] initiated');
 	return (sinkProxies: ReactSink) => {
-		console.log('[ReactDriver] rendering started');
+		console.log('[ReactDOMDriver] rendering started');
 		const proxy = sinkProxies.reactDOM;
 		const source = proxy.map(({ View, state }) => {
-			console.log('[ReactDriver] rendering');
+			console.log('[ReactDOMDriver] rendering');
 			ReactDOM.render(<View {...state} />, DOMNode);
+		});
+		const subscription = source.subscribe();
+		const dispose = () => subscription.unsubscribe();
+		return {
+			source,
+			dispose,	
+		};
+	};
+}
+
+export function makeReactStateDriver(cb: (v: any) => void): ReactDriver {
+	console.log('[ReactStateDriver] initiated');
+	return (sinkProxies: ReactSink) => {
+		console.log('[ReactStateDriver] state change started');
+		const proxy = sinkProxies.reactDOM;
+		const source = proxy.map(({ View, state }) => {
+			console.log('[ReactStateDriver] changing state');
+			cb({ View, state });
 		});
 		const subscription = source.subscribe();
 		const dispose = () => subscription.unsubscribe();

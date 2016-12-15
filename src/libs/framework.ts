@@ -1,4 +1,5 @@
 import * as Rx from 'rxjs/Rx';
+import * as React from 'react';
 import { mapValues, map, forEach } from 'lodash';
 
 export type DisposeFn = () => void;
