@@ -15,7 +15,7 @@ import {
 
 
 export interface ReactSink extends Sinks {
-	reactDOM: Rx.Observable<ViewDelta<any>>;
+	reactRender: Rx.Observable<ViewDelta<any>>;
 };
 
 export interface ReactSourceDefinition extends SourceDefinition {
@@ -24,7 +24,7 @@ export interface ReactSourceDefinition extends SourceDefinition {
 }
 
 export interface ReactSource {
-	reactDOM: Rx.Observable<void>,
+	reactRender: Rx.Observable<void>,
 };
 
 export interface ReactDriver extends Driver {
@@ -32,14 +32,14 @@ export interface ReactDriver extends Driver {
 };
 
 export interface ReactDriverDefinition extends Drivers {
-	reactDOM: ReactDriver,
+	reactRender: ReactDriver,
 };
 
 export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 	console.log('[ReactDOMDriver] initiated');
 	return (sinkProxies: ReactSink) => {
 		console.log('[ReactDOMDriver] rendering started');
-		const proxy = sinkProxies.reactDOM;
+		const proxy = sinkProxies.reactRender;
 		const source = proxy.map(({ View, state }) => {
 			console.log('[ReactDOMDriver] rendering');
 			ReactDOM.render(<View {...state} />, DOMNode);
@@ -57,7 +57,7 @@ export function makeReactStateDriver(cb: (v: any) => void): ReactDriver {
 	console.log('[ReactStateDriver] initiated');
 	return (sinkProxies: ReactSink) => {
 		console.log('[ReactStateDriver] state change started');
-		const proxy = sinkProxies.reactDOM;
+		const proxy = sinkProxies.reactRender;
 		const source = proxy.map(({ View, state }) => {
 			console.log('[ReactStateDriver] changing state');
 			cb({ View, state });
