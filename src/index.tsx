@@ -47,8 +47,13 @@ interface ComboBoxProps {
 	onChangeValue: (state: any) => any,
 };
 
-const ComboBox = createAppComponent<ComboBoxProps, any>(main, drivers, {
-	onChangeValue: (state: any) => state.value
-});
+const ComboBox = createAppComponent<ComboBoxProps>(
+	main,
+	drivers,
+	{
+		onChangeValue: (state: any) => state.value
+	},
+	'ComboBox'
+);
 
 render(<ComboBox onChangeValue={(v) => console.log(v)} />, document.getElementById('app'));

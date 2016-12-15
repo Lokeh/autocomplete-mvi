@@ -8,9 +8,10 @@ export interface PropsMap {
 	[K: string]: (state: any) => any
 };
 
-export function createAppComponent<P, S>(main: Main, drivers: MVI.Drivers, propsMap: PropsMap) {
-	return class App extends React.Component<P, S> implements React.ComponentLifecycle<P, S> {
-		component: React.ComponentClass<P> | React.StatelessComponent<S> | string;
+export function createAppComponent<P>(main: Main, drivers: MVI.Drivers, propsMap: PropsMap, displayName?: string) {
+	return class App extends React.Component<P, any> implements React.ComponentLifecycle<P, any> {
+		static displayName = `App(${displayName || ''})`
+		component: React.ComponentClass<P> | React.StatelessComponent<any> | string;
         dispose: MVI.DisposeFn;
 		componentWillMount() {
             const extDrivers = {
