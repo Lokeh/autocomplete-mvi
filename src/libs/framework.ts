@@ -1,3 +1,4 @@
+import * as Rx from 'rxjs/Rx';
 import { mapValues, map, forEach } from 'lodash';
 
 export type DisposeFn = () => void;
@@ -64,7 +65,7 @@ function link(sinks: Sinks, sinkProxies: SinkProxies): DisposeFn {
 	});
 
 	return () => {
-		subscriptions.forEach((subscription) => subscription.dispose());
+		subscriptions.forEach((subscription) => subscription.unsubscribe());
 	};
 }
 

@@ -1,4 +1,4 @@
-import * as Rx from 'rx';
+import * as Rx from 'rxjs/Rx';
 import { events } from './view';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
 export interface Intents {
@@ -54,7 +54,7 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	);
 
 	const searchRequest$ = value$
-		.debounce(300);
+		.debounceTime(300);
 
 	const completeSelectedHighlight$ = events.input$
 		.filter(byType('onKeyPress'))
@@ -71,7 +71,7 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	const autoComplete$ = events.resultsList$
 		.filter(byType('onClick'))
 		.map(({ value }): string => value)
-		.doOnNext((v) => console.log('[intent]', v));
+		.do((v) => console.log('[intent]', v));
 	
 	const results$ = responses$;
 

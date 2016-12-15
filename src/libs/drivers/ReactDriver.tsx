@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as Rx from 'rxjs/rx';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
 import {
@@ -44,7 +45,7 @@ export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 			ReactDOM.render(<View {...state} />, DOMNode);
 		});
 		const subscription = source.subscribe();
-		const dispose = () => subscription.dispose();
+		const dispose = () => subscription.unsubscribe();
 		return {
 			source,
 			dispose,	

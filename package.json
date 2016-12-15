@@ -18,7 +18,7 @@
     "observe-component": "^3.3.1",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
-    "rx": "^4.1.0",
+    "rxjs": "^5.0.1",
     "whatwg-fetch": "^2.0.1"
   },
   "devDependencies": {

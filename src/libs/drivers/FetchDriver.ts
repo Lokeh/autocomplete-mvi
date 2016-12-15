@@ -1,5 +1,5 @@
 import 'whatwg-fetch';
-import * as Rx from 'rx';
+import * as Rx from 'rxjs/Rx';
 import { Sources, SourceDefinition, Sinks, Drivers, Driver, DisposeFn } from '../framework';
 
 export interface FetchSink extends Sinks {
@@ -32,11 +32,11 @@ export interface FetchDriverDefinition extends Drivers {
 export function makeFetchDriver(): FetchDriver {
     return (sinkProxies: FetchSink) => {
         const source = sinkProxies.fetch
-            .flatMapLatest((params: FetchParams) => {
+            .switchMap((params: FetchParams) => {
                 return Rx.Observable.fromPromise(fetch((params.url)))
             });
         const subscription = source.subscribe();
-        const dispose = () => subscription.dispose();
+        const dispose = () => subscription.unsubscribe();
 
         return {
             source,
@@ -53,7 +53,7 @@ export function makeJSONDriver(): FetchDriver {
             })
             .flatMap((res: Response) => Rx.Observable.fromPromise(res.json()));
         const subscription = source.subscribe();
-        const dispose = () => subscription.dispose();
+        const dispose = () => subscription.unsubscribe();
 
         return {
             source,

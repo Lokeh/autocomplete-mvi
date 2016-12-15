@@ -1,4 +1,4 @@
-import * as Rx from 'rx';
+import * as Rx from 'rxjs/Rx';
 import * as MVI from './libs/framework';
 import * as RD from './libs/drivers/ReactDriver';
 import * as FD from './libs/drivers/FetchDriver';

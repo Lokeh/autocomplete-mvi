@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { observeComponent, fromComponent } from 'observe-component/rx';
+import { observeComponent, fromComponent } from 'observe-component/rxjs';
 import { connectedView } from './libs/drivers/ReactDriver';
 
 export interface ViewProps {

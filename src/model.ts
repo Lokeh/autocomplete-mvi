@@ -1,4 +1,4 @@
-import * as Rx from 'rx';
+import * as Rx from 'rxjs/Rx';
 import { reducers } from './reducers';
 import { Intents } from './intent';
 import { Reducer } from './reducers';
