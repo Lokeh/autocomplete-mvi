@@ -28,13 +28,13 @@ function main(sources: Sources): Sinks {
 	const actions = intents(responses$);
 	const { view$, events } = view(model(actions));
 	return {
-		reactRender: view$,
+		render: view$,
 		fetch: generateRequest(actions.searchRequest$),
 	};
 }
 
 const { run } = MVI.App<Sources, Drivers>(main, {
-	reactRender: RD.makeReactDOMDriver(document.getElementById('app')),
+	render: RD.makeReactDOMDriver(document.getElementById('app')),
 	fetch: FD.makeJSONDriver(),
 });
 run();
