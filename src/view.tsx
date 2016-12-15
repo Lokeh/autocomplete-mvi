@@ -108,4 +108,4 @@ export const events = {
 	input$: fromComponent(SearchInput),
 	resultsList$: fromComponent(Result),
 };
-export const view = connectedView<ViewProps, any>(View, events);
+export const view = connectedView<ViewProps>(View, events);

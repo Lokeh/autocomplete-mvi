@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Rx from 'rxjs/rx';
+import { map } from 'lodash';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
 import {
@@ -15,7 +16,7 @@ import {
 
 
 export interface ReactSink extends Sinks {
-	reactRender: Rx.Observable<ViewDelta<any>>;
+	reactRender: Rx.Observable<ViewDelta<any>>,
 };
 
 export interface ReactSourceDefinition extends SourceDefinition {
@@ -53,6 +54,12 @@ export function makeReactDOMDriver(DOMNode: Element): ReactDriver {
 	};
 }
 
+export function makeReactEventDriver() {
+	return (sinkProxies: ReactSink) => {
+		
+	}
+}
+
 export function makeReactStateDriver(cb: (v: any) => void): ReactDriver {
 	console.log('[ReactStateDriver] initiated');
 	return (sinkProxies: ReactSink) => {
@@ -66,17 +73,44 @@ export function makeReactStateDriver(cb: (v: any) => void): ReactDriver {
 		const dispose = () => subscription.unsubscribe();
 		return {
 			source,
-			dispose,	
+			dispose,
 		};
 	};
 }
 
-// connectedView :: View -> Observable<State> -> Observable<{View, State}>
-export function connectedView<P, E>(View: Component, events: E) {
+interface Events {
+	[K: string]: Rx.Observable<any>
+};
+
+type EventDefinition = {
+	category: string,
+	event: any,
+};
+
+type EventSink = {
+	select: (k: string) => Rx.Observable<any>,
+};
+
+function makeEventSink(events: Events): EventSink {
+	// const eventDefs = map(events, (event$, key) => {
+	// 	event$.map((ev): EventDefinition => ({
+	// 		category: key,
+	// 		event: ev,
+	// 	}));
+	// });
+
+	return {
+		select: (category) => {
+			return events[category];
+		},
+	};
+}
+
+export function connectedView<P>(View: Component, events: Events) {
 	return function connectViewTo(model: Rx.Observable<P>) {
 		return {
 			view$: model.map((state: P): ViewDelta<P> => ({ View, state })),
-			events,
+			events: makeEventSink(events),
 		};
 	};
 }
