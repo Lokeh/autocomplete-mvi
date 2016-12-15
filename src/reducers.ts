@@ -1,5 +1,4 @@
 import * as Rx from 'rx';
-import { getResults } from './libs/getResults';
 import { Intents } from './intent';
 import { Model } from './model';
 

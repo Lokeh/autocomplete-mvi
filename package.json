@@ -15,7 +15,7 @@
     "@types/react-dom": "^0.14.19",
     "es6-shim": "^0.35.2",
     "lodash": "^4.17.2",
-    "observe-component": "^3.0.0",
+    "observe-component": "^3.3.1",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "rx": "^4.1.0",

@@ -2,18 +2,9 @@ import * as Rx from 'rx';
 import { events } from './view';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
 export interface Intents {
-	// inputChange$: Rx.Observable<string>,
-	// inputBlur$: Rx.Observable<ComponentEvent>,
-	// resultsClicks$: Rx.Observable<string>,
 	searchRequest$: Rx.Observable<any>,
-	// resultsHighlighted$: Rx.Observable<number>,
-	// resultsUnhighlighted$: Rx.Observable<null>,
-	// responses$: Rx.Observable<any>,
-	// enterPressed$: Rx.Observable<ComponentEvent>,
-	// arrowDownPressed$: Rx.Observable<ComponentEvent>,
-	// arrowUpPressed$: Rx.Observable<ComponentEvent>,
 	value$: Rx.Observable<string>,
-	hideResults$: Rx.Observable<boolean>, 
+	hideResults$: Rx.Observable<ComponentEvent>, 
 	results$: Rx.Observable<any>,
 	highlight$: Rx.Observable<number>, 
 	highlightMoveUp$: Rx.Observable<ComponentEvent>,
@@ -43,10 +34,18 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 		.map(({ value: event }): string => event.target.value);
 
 	const hideResults$ = Rx.Observable.merge(
-		events.input$.filter(byType('onBlur'))
-			.withLatestFrom(isHighlighted$, (blur, isHighlighted) => isHighlighted)
-			.filter((v) => !v),
-		events.input$.filter(byType('onChange')).filter((v) => v === ""),
+		events.input$
+			.filter(byType('onBlur'))
+			.withLatestFrom(
+				isHighlighted$,
+				(blur, isHighlighted): [ComponentEvent, boolean] =>
+					[blur, isHighlighted]
+			)
+			.filter(([blur, isHighlighted]) => !isHighlighted)
+			.map(([blur, isHighlighted]) => blur),
+		events.input$
+			.filter(byType('onChange'))
+			.filter(({ value }) => value.target.value === ""),
 	);
 
 	const highlight$ = Rx.Observable.merge(
