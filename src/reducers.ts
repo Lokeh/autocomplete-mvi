@@ -93,8 +93,8 @@ export function reducers(intents: Intents): Rx.Observable<Reducer> {
 		});
 
 	const autoCompleteReducer$ = intents.autoComplete$
-		.map((value) => createReducer({
-			value,
+		.map(({ props }) => createReducer({
+			value: props.children,
 			showResults: false,
 			highlighted: null,
 			results: [],

@@ -10,7 +10,7 @@ export interface Intents {
 	highlightMoveUp$: Rx.Observable<ComponentEvent>,
 	highlightMoveDown$: Rx.Observable<ComponentEvent>,
 	completeSelectedHighlight$: Rx.Observable<ComponentEvent>,
-	autoComplete$: Rx.Observable<string>
+	autoComplete$: Rx.Observable<ComponentEvent>
 };
 
 function byType(desiredType: string): (event: ComponentEvent) => boolean {
@@ -72,8 +72,6 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	
 	const autoComplete$ = events.resultsList$
 		.filter(byType('onClick'))
-		.map(({ props }): string => props.children)
-		.do((v) => console.log('[intent]', v));
 	
 	const results$ = responses$;
 
