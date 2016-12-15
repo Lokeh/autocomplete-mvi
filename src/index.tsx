@@ -2,18 +2,19 @@ import * as Rx from 'rxjs/Rx';
 import * as MVI from './libs/framework';
 import * as RD from './libs/drivers/ReactDriver';
 import * as FD from './libs/drivers/FetchDriver';
+import * as ED from './libs/drivers/EventDriver';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { createAppComponent } from './libs/createAppComponent';
 
 // app
-import { view } from './view';
+import { view, ViewEvents } from './view';
 import { model } from './model';
 import { intents } from './intent';
 
-type Sources = RD.ReactSource & FD.FetchSource;
-type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition;
-type Sinks = RD.ReactSink & FD.FetchSink;
+type Sources = RD.ReactSource & FD.FetchSource & ED.EventSource;
+type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition & ED.EventDriverDefinition;
+type Sinks = RD.ReactSink & FD.FetchSink & ED.EventSink;
 
 function generateRequest(term$: Rx.Observable<String>) {
 	return term$
@@ -24,18 +25,21 @@ function generateRequest(term$: Rx.Observable<String>) {
 }
 
 function main(sources: Sources): Sinks {
+	const events = ED.selectable(sources.events);
 	const responses$ = sources.fetch;
-	const actions = intents(responses$);
-	const { view$, events } = view(model(actions));
+	const actions = intents(responses$, events);
+	const { view$, events$ } = view(model(actions));
 	return {
 		render: view$,
 		fetch: generateRequest(actions.searchRequest$),
+		events: events$,
 	};
 }
 
 const { run } = MVI.App<Sources, Drivers>(main, {
 	render: RD.makeReactDOMDriver(document.getElementById('app')),
 	fetch: FD.makeJSONDriver(),
+	events: ED.makeEventDriver(),
 });
 run();
 

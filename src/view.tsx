@@ -1,6 +1,7 @@
+import * as Rx from 'rxjs/Rx';
 import * as React from 'react';
 import { observeComponent, fromComponent } from 'observe-component/rxjs';
-import { connectedView } from './libs/drivers/ReactDriver';
+import { connectedView } from './libs/drivers/EventDriver';
 
 export interface ViewProps {
 	value: string,
@@ -104,8 +105,13 @@ const styles = {
 	},
 };
 
-export const events = {
-	input$: fromComponent(SearchInput),
-	resultsList$: fromComponent(Result),
+export type ViewEvents = {
+	input: Rx.Observable<any>,
+	resultsList: Rx.Observable<any>,
+}
+
+export const events: ViewEvents = {
+	input: fromComponent(SearchInput),
+	resultsList: fromComponent(Result),
 };
 export const view = connectedView<ViewProps>(View, events);

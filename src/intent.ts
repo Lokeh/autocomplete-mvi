@@ -1,6 +1,7 @@
 import * as Rx from 'rxjs/Rx';
-import { events } from './view';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
+import { Selectable } from './libs/drivers/EventDriver';
+import { ViewEvents } from './view';
 export interface Intents {
 	searchRequest$: Rx.Observable<any>,
 	value$: Rx.Observable<string>,
@@ -21,20 +22,20 @@ function byKey(key: string): (event: ComponentEvent) => boolean {
 	return ({ value }: ComponentEvent) => value.key === key; 
 }
 
-export function intents(responses$: Rx.Observable<any>): Intents {
+export function intents(responses$: Rx.Observable<any>, events: Selectable<ViewEvents>): Intents {
 	const isHighlighted$ = Rx.Observable.merge(
-		events.resultsList$.filter(byType('onMouseEnter'))
+		events.select('resultsList').filter(byType('onMouseEnter'))
 			.map(() => true),
-		events.resultsList$.filter(byType('onMouseLeave'))
+		events.select('resultsList').filter(byType('onMouseLeave'))
 			.map(() => false),
 	);
 
-	const value$ = events.input$
+	const value$ = events.select('input')
 		.filter(byType('onChange'))
 		.map(({ value: event }): string => event.target.value);
 
 	const hideResults$ = Rx.Observable.merge(
-		events.input$
+		events.select('input')
 			.filter(byType('onBlur'))
 			.withLatestFrom(
 				isHighlighted$,
@@ -43,34 +44,34 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 			)
 			.filter(([blur, isHighlighted]) => !isHighlighted)
 			.map(([blur, isHighlighted]) => blur),
-		events.input$
+		events.select('input')
 			.filter(byType('onChange'))
 			.filter(({ value: event }) => event.target.value === ""),
 	);
 
 	const highlight$ = Rx.Observable.merge(
-		events.resultsList$.filter(byType('onMouseEnter'))
+		events.select('resultsList').filter(byType('onMouseEnter'))
 			.map(({ props }): number => props.id),
-		events.resultsList$.filter(byType('onMouseLeave'))
+		events.select('resultsList').filter(byType('onMouseLeave'))
 			.map((): void => null),
 	);
 
 	const searchRequest$ = value$
 		.debounceTime(300);
 
-	const completeSelectedHighlight$ = events.input$
+	const completeSelectedHighlight$ = events.select('input')
 		.filter(byType('onKeyPress'))
 		.filter(byKey('Enter'));
 	
-	const highlightMoveDown$ = events.input$
+	const highlightMoveDown$ = events.select('input')
 		.filter(byType('onKeyDown'))
 		.filter(byKey('ArrowDown'));
 
-	const highlightMoveUp$ = events.input$
+	const highlightMoveUp$ = events.select('input')
 		.filter(byType('onKeyDown'))
 		.filter(byKey('ArrowUp'));
 	
-	const autoComplete$ = events.resultsList$
+	const autoComplete$ = events.select('resultsList')
 		.filter(byType('onClick'))
 	
 	const results$ = responses$;
