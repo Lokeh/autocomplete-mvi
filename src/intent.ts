@@ -38,19 +38,21 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 			.filter(byType('onBlur'))
 			.withLatestFrom(
 				isHighlighted$,
-				(blur, isHighlighted): [ComponentEvent, boolean] =>
+				(blur, isHighlighted) =>
 					[blur, isHighlighted]
 			)
 			.filter(([blur, isHighlighted]) => !isHighlighted)
 			.map(([blur, isHighlighted]) => blur),
 		events.input$
 			.filter(byType('onChange'))
-			.filter(({ value }) => value.target.value === ""),
+			.filter(({ value: event }) => event.target.value === ""),
 	);
 
 	const highlight$ = Rx.Observable.merge(
-		events.resultsList$.filter(byType('onMouseEnter')).map(({ value }): number => value),
-		events.resultsList$.filter(byType('onMouseLeave')).map(() => null),
+		events.resultsList$.filter(byType('onMouseEnter'))
+			.map(({ props }): number => props.id),
+		events.resultsList$.filter(byType('onMouseLeave'))
+			.map((): void => null),
 	);
 
 	const searchRequest$ = value$
@@ -70,7 +72,7 @@ export function intents(responses$: Rx.Observable<any>): Intents {
 	
 	const autoComplete$ = events.resultsList$
 		.filter(byType('onClick'))
-		.map(({ value }): string => value)
+		.map(({ props }): string => props.children)
 		.do((v) => console.log('[intent]', v));
 	
 	const results$ = responses$;

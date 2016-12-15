@@ -40,32 +40,33 @@ function View({ value, results = [], showResults = false, highlighted = null }: 
 	);
 }
 
-const ResultsList = 
-	observeComponent<ResultsListProps>(
+const Result = observeComponent<any>(
 		'onClick',
 		'onMouseEnter',
 		'onMouseLeave',
-	)(({ results, onClick, onMouseEnter, onMouseLeave, highlighted }: ResultsListProps) => (
+	)('li');
+
+function ResultsList({ results, onClick, onMouseEnter, onMouseLeave, highlighted }: ResultsListProps) {
+	return (
 		<div style={styles.resultsBox}>
 			<ul style={styles.resultsList}>
 				{results.map((title: string, i: number) => 
-					<li
+					<Result
 						key={i}
-						onClick={() => onClick(title)}
-						onMouseEnter={() => onMouseEnter(i)}
 						style={Object.assign(
 							{},
 							styles.result,
 							i === highlighted ? styles.highlighted : {},
 						)}
-						onMouseLeave={() => onMouseLeave()}
+						id={i}
 					>
 						{title}
-					</li>
+					</Result>
 				)}
 			</ul>
 		</div>
-	));
+	);
+}
 
 const styles = {
 	comboBox: {
@@ -105,6 +106,6 @@ const styles = {
 
 export const events = {
 	input$: fromComponent(SearchInput),
-	resultsList$: fromComponent(ResultsList),
+	resultsList$: fromComponent(Result),
 };
 export const view = connectedView<ViewProps, any>(View, events);
