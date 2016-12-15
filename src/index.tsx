@@ -33,27 +33,27 @@ function main(sources: Sources): Sinks {
 	};
 }
 
-const drivers: FD.FetchDriverDefinition = {
+const { run } = MVI.App<Sources, Drivers>(main, {
+	reactDOM: RD.makeReactDOMDriver(document.getElementById('app')),
 	fetch: FD.makeJSONDriver(),
-}
+});
+run();
 
-// const { run } = MVI.App<Sources, Drivers>(main, {
-// 	reactDOM: RD.makeReactDOMDriver(document.getElementById('app')),
+// const drivers: FD.FetchDriverDefinition = {
 // 	fetch: FD.makeJSONDriver(),
-// });
-// run();
+// }
 
-interface ComboBoxProps {
-	onChangeValue: (state: any) => any,
-};
+// interface ComboBoxProps {
+// 	onChangeValue: (state: any) => any,
+// };
 
-const ComboBox = createAppComponent<ComboBoxProps>(
-	main,
-	drivers,
-	{
-		onChangeValue: (state: any) => state.value
-	},
-	'ComboBox'
-);
+// const ComboBox = createAppComponent<ComboBoxProps>(
+// 	main,
+// 	drivers,
+// 	{
+// 		onChangeValue: (state: any) => state.value
+// 	},
+// 	'ComboBox'
+// );
 
-render(<ComboBox onChangeValue={(v) => console.log(v)} />, document.getElementById('app'));
+// render(<ComboBox onChangeValue={(v) => console.log(v)} />, document.getElementById('app'));
