@@ -13,9 +13,6 @@ export interface ViewProps {
 interface ResultsListProps {
 	results: Object[],
 	highlighted: number,
-	onClick?: Function,
-	onMouseEnter?: Function,
-	onMouseLeave?: Function,
 };
 
 const SearchInput = observeComponent<React.HTMLProps<any>>(
@@ -47,7 +44,7 @@ const Result = observeComponent<any>(
 		'onMouseLeave',
 	)('li');
 
-function ResultsList({ results, onClick, onMouseEnter, onMouseLeave, highlighted }: ResultsListProps) {
+function ResultsList({ results, highlighted }: ResultsListProps) {
 	return (
 		<div style={styles.resultsBox}>
 			<ul style={styles.resultsList}>
