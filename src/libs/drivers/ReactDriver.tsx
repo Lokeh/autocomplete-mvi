@@ -89,20 +89,25 @@ type EventDefinition = {
 
 type EventSink = {
 	select: (k: string) => Rx.Observable<any>,
+	stream: Rx.Observable<EventDefinition>,
 };
 
 function makeEventSink(events: Events): EventSink {
-	// const eventDefs = map(events, (event$, key) => {
-	// 	event$.map((ev): EventDefinition => ({
-	// 		category: key,
-	// 		event: ev,
-	// 	}));
-	// });
+	const eventDefs = map(events, (event$, key) => {
+		return event$.map((ev): EventDefinition => ({
+			category: key,
+			event: ev,
+		}));
+	});
+
+	const stream = Rx.Observable.merge(...eventDefs);
 
 	return {
 		select: (category) => {
-			return events[category];
+			return stream.filter((eventDef) => eventDef.category === category)
+				.map((eventDef) => eventDef.event);
 		},
+		stream,
 	};
 }
 
