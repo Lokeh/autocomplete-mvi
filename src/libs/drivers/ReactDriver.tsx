@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Rx from 'rxjs/rx';
+import * as Rx from 'rxjs/Rx';
 import { map } from 'lodash';
 import { Component } from '../types/Component';
 import { ViewDelta } from '../types/Delta';
@@ -74,48 +74,6 @@ export function makeReactStateDriver(cb: (v: any) => void): ReactDriver {
 		return {
 			source,
 			dispose,
-		};
-	};
-}
-
-interface Events {
-	[K: string]: Rx.Observable<any>
-};
-
-type EventDefinition = {
-	category: string,
-	event: any,
-};
-
-type EventSink = {
-	select: (k: string) => Rx.Observable<any>,
-	stream: Rx.Observable<EventDefinition>,
-};
-
-function makeEventSink(events: Events): EventSink {
-	const eventDefs = map(events, (event$, key) => {
-		return event$.map((ev): EventDefinition => ({
-			category: key,
-			event: ev,
-		}));
-	});
-
-	const stream = Rx.Observable.merge(...eventDefs);
-
-	return {
-		select: (category) => {
-			return stream.filter((eventDef) => eventDef.category === category)
-				.map((eventDef) => eventDef.event);
-		},
-		stream,
-	};
-}
-
-export function connectedView<P>(View: Component, events: Events) {
-	return function connectViewTo(model: Rx.Observable<P>) {
-		return {
-			view$: model.map((state: P): ViewDelta<P> => ({ View, state })),
-			events: makeEventSink(events),
 		};
 	};
 }
