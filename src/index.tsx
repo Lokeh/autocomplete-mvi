@@ -1,5 +1,5 @@
 import * as Rx from 'rxjs/Rx';
-import * as MVI from 'cactus/core';
+import * as Cactus from 'cactus/core';
 import * as React from 'cactus/drivers/react';
 import * as Fetch from 'cactus/drivers/fetch';
 import * as Events from 'cactus/drivers/events';
@@ -35,7 +35,7 @@ function main(sources: Sources): Sinks {
 	};
 }
 
-const { run } = MVI.App<Sources, Drivers>(main, {
+const { run } = Cactus.App<Sources, Drivers>(main, {
 	render: React.makeReactDOMDriver(document.getElementById('app')),
 	fetch: Fetch.makeJSONDriver(),
 	events: Events.makeEventDriver(),
