@@ -1,6 +1,6 @@
 import * as Rx from 'rxjs/Rx';
 import { ComponentEvent } from 'observe-component/common/ComponentEvent';
-import { Selectable } from 'cactus/drivers/events';
+import { Selectable } from 'cactus/events';
 import { ViewEvents } from './view';
 export interface Intents {
 	searchRequest$: Rx.Observable<any>,

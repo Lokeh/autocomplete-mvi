@@ -1,7 +1,7 @@
 import * as Rx from 'rxjs/Rx';
 import * as React from 'react';
 import { observeComponent, fromComponent } from 'observe-component/rxjs';
-import { connectedView } from 'cactus/connectedView';
+import { connectedView } from 'cactus/react';
 
 export interface ViewProps {
 	value: string,

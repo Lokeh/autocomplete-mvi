@@ -1,18 +1,19 @@
 import * as Rx from 'rxjs/Rx';
 import * as MVI from 'cactus/core';
-import * as RD from 'cactus/drivers/react';
-import * as FD from 'cactus/drivers/fetch';
-import * as ED from 'cactus/drivers/events';
-import { createAppComponent } from 'cactus/createAppComponent';
+import * as React from 'cactus/drivers/react';
+import * as Fetch from 'cactus/drivers/fetch';
+import * as Events from 'cactus/drivers/events';
+import { selectable } from 'cactus/events';
+// import { createAppComponent } from 'cactus/createAppComponent';
 
 // app
 import { view, ViewEvents } from './view';
 import { model } from './model';
 import { intents } from './intent';
 
-type Sources = RD.ReactSource & FD.FetchSource & ED.EventSource;
-type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition & ED.EventDriverDefinition;
-type Sinks = RD.ReactSink & FD.FetchSink & ED.EventSink;
+type Sources = React.RenderSource & Fetch.FetchSource & Events.EventSource;
+type Drivers = React.RenderDriverDefinition & Fetch.FetchDriverDefinition & Events.EventDriverDefinition;
+type Sinks = React.RenderSink & Fetch.FetchSink & Events.EventSink;
 
 function generateRequest(term$: Rx.Observable<String>) {
 	return term$
@@ -23,7 +24,7 @@ function generateRequest(term$: Rx.Observable<String>) {
 }
 
 function main(sources: Sources): Sinks {
-	const events = ED.selectable(sources.events);
+	const events = selectable(sources.events);
 	const responses$ = sources.fetch;
 	const actions = intents(responses$, events);
 	const { view$, events$ } = view(model(actions));
@@ -35,9 +36,9 @@ function main(sources: Sources): Sinks {
 }
 
 const { run } = MVI.App<Sources, Drivers>(main, {
-	render: RD.makeReactDOMDriver(document.getElementById('app')),
-	fetch: FD.makeJSONDriver(),
-	events: ED.makeEventDriver(),
+	render: React.makeReactDOMDriver(document.getElementById('app')),
+	fetch: Fetch.makeJSONDriver(),
+	events: Events.makeEventDriver(),
 });
 run();
 
