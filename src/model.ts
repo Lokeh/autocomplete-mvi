@@ -10,8 +10,7 @@ export interface Model {
 	highlighted: number | null,
 };
 
-// model :: Map<Observable<Delta>> -> Observable<State>
-export function model(intents: Intents): Rx.Observable<Model> {
+export function model(intents: Intents) {
 	return reducers(intents)
 		.startWith(<any>{
 			value: '',

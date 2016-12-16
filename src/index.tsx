@@ -1,11 +1,9 @@
 import * as Rx from 'rxjs/Rx';
-import * as MVI from './libs/framework';
-import * as RD from './libs/drivers/ReactDriver';
-import * as FD from './libs/drivers/FetchDriver';
-import * as ED from './libs/drivers/EventDriver';
-import * as React from 'react';
-import { render } from 'react-dom';
-import { createAppComponent } from './libs/createAppComponent';
+import * as MVI from 'cactus/core';
+import * as RD from 'cactus/drivers/react';
+import * as FD from 'cactus/drivers/fetch';
+import * as ED from 'cactus/drivers/events';
+import { createAppComponent } from 'cactus/createAppComponent';
 
 // app
 import { view, ViewEvents } from './view';
