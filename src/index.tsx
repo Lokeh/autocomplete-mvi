@@ -1,19 +1,20 @@
 import * as Rx from 'rxjs/Rx';
-import * as Cactus from 'cactus/core';
-import * as React from 'cactus/drivers/react';
-import * as Fetch from 'cactus/drivers/fetch';
-import * as Events from 'cactus/drivers/events';
-import { selectable } from 'cactus/events';
-// import { createAppComponent } from 'cactus/createAppComponent';
+import * as MVI from './libs/framework';
+import * as RD from './libs/drivers/ReactDriver';
+import * as FD from './libs/drivers/FetchDriver';
+import * as ED from './libs/drivers/EventDriver';
+import * as React from 'react';
+import { render } from 'react-dom';
+import { createAppComponent } from './libs/createAppComponent';
 
 // app
 import { view, ViewEvents } from './view';
 import { model } from './model';
 import { intents } from './intent';
 
-type Sources = React.RenderSource & Fetch.FetchSource & Events.EventSource;
-type Drivers = React.RenderDriverDefinition & Fetch.FetchDriverDefinition & Events.EventDriverDefinition;
-type Sinks = React.RenderSink & Fetch.FetchSink & Events.EventSink;
+type Sources = RD.ReactSource & FD.FetchSource & ED.EventSource;
+type Drivers = RD.ReactDriverDefinition & FD.FetchDriverDefinition & ED.EventDriverDefinition;
+type Sinks = RD.ReactSink & FD.FetchSink & ED.EventSink;
 
 function generateRequest(term$: Rx.Observable<String>) {
 	return term$
@@ -24,7 +25,7 @@ function generateRequest(term$: Rx.Observable<String>) {
 }
 
 function main(sources: Sources): Sinks {
-	const events = selectable(sources.events);
+	const events = ED.selectable(sources.events);
 	const responses$ = sources.fetch;
 	const actions = intents(responses$, events);
 	const { view$, events$ } = view(model(actions));
@@ -35,10 +36,10 @@ function main(sources: Sources): Sinks {
 	};
 }
 
-const { run } = Cactus.App<Sources, Drivers>(main, {
-	render: React.makeReactDOMDriver(document.getElementById('app')),
-	fetch: Fetch.makeJSONDriver(),
-	events: Events.makeEventDriver(),
+const { run } = MVI.App<Sources, Drivers>(main, {
+	render: RD.makeReactDOMDriver(document.getElementById('app')),
+	fetch: FD.makeJSONDriver(),
+	events: ED.makeEventDriver(),
 });
 run();
 

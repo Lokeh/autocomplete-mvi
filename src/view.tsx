@@ -1,7 +1,7 @@
 import * as Rx from 'rxjs/Rx';
 import * as React from 'react';
-import { observeComponent, fromComponent } from 'cactus/events';
-import { connectedView } from 'cactus/react';
+import { observeComponent, fromComponent } from 'observe-component/rxjs';
+import { connectedView } from './libs/drivers/EventDriver';
 
 export interface ViewProps {
 	value: string,
@@ -22,6 +22,7 @@ const SearchInput = observeComponent<React.HTMLProps<any>>(
 	'onKeyDown',
 )('input');
 
+// View :: state -> DOM
 function View({ value, results = [], showResults = false, highlighted = null }: ViewProps) {
 	return (
 		<div style={styles.comboBox}>

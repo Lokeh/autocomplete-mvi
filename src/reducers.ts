@@ -29,6 +29,7 @@ function createReducer(arg: Partial<Model>): Reducer {
 		Object.assign({}, oldState, newState);
 }
 
+// reducers :: Map<Observable<Delta>> -> Observable<Reducer>
 export function reducers(intents: Intents): Rx.Observable<Reducer> {
 	const valueReducer$ = intents.value$
 		.map((value) => createReducer({ value }));
